@@ -1,0 +1,20 @@
+<?php
+
+return [
+    'registered_check_email' => 'Registration successful. Please check your email for the verification code.',
+    'code_expired'           => 'Verification code has expired.',
+    'invalid_code'           => 'Invalid verification code.',
+    'email_verified_success' => 'Email successfully verified.',
+    'verification_sent'      => 'A new verification code has been sent.',
+    'user_not_found'         => 'User not found.',
+    'language_not_found'     => 'Language not found.',
+    'failed'                 => 'Invalid email or password.',
+    'logged_out'             => 'You have been logged out.',
+    'reset_code_sent'        => 'Password reset code sent to your email.',
+    'password_reset_success' => 'Your password has been reset successfully.',
+    'incorrect_old_password' => 'Incorrect old password.',
+    'password_changed_success' => 'Password changed successfully.',
+    'token_expired'          => 'Token expired!',
+    'unauthenticated'        => 'Unauthenticated, you must be logged in to access this resource.',
+    'session_expired'        => 'Your session has expired. Please log in again.',
+];
