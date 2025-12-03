@@ -73,7 +73,13 @@ class ListingResource extends JsonResource
                 'name' => $this->location_name,
             ] : null,
 
-            'photos' => $this->photos->pluck('url'),
+            'photos' => $this->photos->map(function ($photo) {
+                return [
+                    'id'        => $photo->id,
+                    'url'       => $this->fullUrl($photo->url),
+                    'thumbnail' => $this->fullUrl($photo->thumbnail),
+                ];
+            }),
 
             'user' => $this->user ? [
                 'id'       => $this->user->id,
@@ -83,5 +89,15 @@ class ListingResource extends JsonResource
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
+    }
+
+
+    /**
+     * @param $path
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\UrlGenerator|\Illuminate\Foundation\Application|string|null
+     */
+    private function fullUrl($path)
+    {
+        return $path ? url('storage/' . $path) : null;
     }
 }
