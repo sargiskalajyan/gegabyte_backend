@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ListingSearchRequest;
 use App\Http\Resources\ListingResource;
 use App\Models\CarModel;
 use App\Models\Category;
@@ -14,6 +15,7 @@ use App\Models\Drivetrain;
 use App\Models\Engine;
 use App\Models\EngineSize;
 use App\Models\Fuel;
+use App\Models\Language;
 use App\Models\Listing;
 use App\Models\Location;
 use App\Models\Package;
@@ -24,12 +26,16 @@ use Illuminate\Support\Facades\Cache;
 class SearchController extends Controller
 {
 
+
     /**
-     * @param Request $request
+     * @param ListingSearchRequest $request
+     * @param $lang
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(Request $request, $lang)
+    public function index(ListingSearchRequest $request, $lang)
     {
+        $validated = $request->validated();
+
         $query = Listing::query()
             ->select([
                 'listings.*',
@@ -125,30 +131,73 @@ class SearchController extends Controller
                     ->where('l_loc.code', $lang);
             })
 
-            ->with(['photos', 'user']); // eager load to prevent N+1
+            ->with(['photos', 'user']); // eager loading
+
 
         // ------------------ APPLY FILTERS ------------------
-        if ($request->make_id) $query->where('listings.make_id', $request->make_id);
-        if ($request->model_id) $query->where('listings.car_model_id', $request->model_id);
-        if ($request->fuel_id) $query->where('listings.fuel_id', $request->fuel_id);
-        if ($request->transmission_id) $query->where('listings.transmission_id', $request->transmission_id);
-        if ($request->location_id) $query->where('listings.location_id', $request->location_id);
-        if ($request->price_from) $query->where('listings.price', '>=', $request->price_from);
-        if ($request->price_to) $query->where('listings.price', '<=', $request->price_to);
-        if ($request->year_from) $query->where('listings.year', '>=', $request->year_from);
-        if ($request->year_to) $query->where('listings.year', '<=', $request->year_to);
-        if ($request->keyword) {
-            $query->where(function ($q) use ($request) {
-                $q->where('listings.description', 'LIKE', "%{$request->keyword}%");
-            });
+        $filters = [
+            'make_id'         => 'listings.make_id',
+            'model_id'        => 'listings.car_model_id',
+            'fuel_id'         => 'listings.fuel_id',
+            'transmission_id' => 'listings.transmission_id',
+            'location_id'     => 'listings.location_id',
+        ];
+
+        foreach ($filters as $input => $column) {
+            if (!empty($validated[$input])) {
+                $query->where($column, $validated[$input]);
+            }
         }
 
+        if (!empty($validated['price_from'])) {
+            $query->where('listings.price', '>=', $validated['price_from']);
+        }
+
+        if (!empty($validated['price_to'])) {
+            $query->where('listings.price', '<=', $validated['price_to']);
+        }
+
+        if (!empty($validated['year_from'])) {
+            $query->where('listings.year', '>=', $validated['year_from']);
+        }
+
+        if (!empty($validated['year_to'])) {
+            $query->where('listings.year', '<=', $validated['year_to']);
+        }
+
+        if (!empty($validated['keyword'])) {
+            $query->where('listings.description', 'LIKE', "%{$validated['keyword']}%");
+        }
+
+        // Order & paginate
         $query->orderBy('listings.created_at', 'DESC');
 
-        $listings = $query->paginate($request->get('per_page', 20));
+        $listings = $query->paginate($validated['per_page'] ?? 20);
 
         return ListingResource::collection($listings);
     }
+
+
+    /**
+     * @param Request $request
+     * @param $lang
+     * @param $listingId
+     * @return ListingResource|\Illuminate\Http\JsonResponse
+     */
+    public function show(Request $request, $lang, $listingId)
+    {
+        $listing = Listing::with('photos')
+            ->where('id', $listingId)
+            ->first();
+
+        if (!$listing) {
+            return response()->json(['message' => __('listings.not_found')], 404);
+        }
+
+        $listing->loadTranslationAttributes();
+        return new ListingResource($listing);
+    }
+
 
 
     /**

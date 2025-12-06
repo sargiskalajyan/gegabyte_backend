@@ -47,6 +47,7 @@ Route::group([
         Route::get('/', [SearchController::class, 'index']);
         Route::get('/list',  [SearchController::class, 'list']);
         Route::get('/models/{id}',  [SearchController::class, 'models']);
+        Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });
 
     Route::post('payments/webhook/{gateway}', [OrderController::class, 'webhook']);
@@ -57,8 +58,11 @@ Route::group([
         Route::post('/password/change', [AuthController::class, 'changePassword']);
 
         Route::group(['prefix' => 'listings'], function () {
+            Route::get('/', [ListingController::class, 'index']);
+            Route::get('/{listing}', [ListingController::class, 'show']);
             Route::post('/', [ListingController::class, 'store']);
             Route::post('/{listing}', [ListingController::class, 'update']);
+            Route::delete('/{listing}', [ListingController::class, 'destroy']);
             Route::delete('/{listing}/photos/{photo}', [ListingController::class, 'deletePhoto']);
         });
 

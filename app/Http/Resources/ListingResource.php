@@ -84,6 +84,8 @@ class ListingResource extends JsonResource
             'user' => $this->user ? [
                 'id'       => $this->user->id,
                 'username' => $this->user->username,
+                'phone_number'=> $this->user->phone_number,
+
             ] : null,
 
             'created_at' => $this->created_at?->toDateTimeString(),

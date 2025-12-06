@@ -87,7 +87,14 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      */
     public function activePackage(): UserPackage
     {
-        // Check if active package exists
+        // Auto-expire old packages (NO CRON NEEDED)
+        $this->userPackages()
+            ->where('status', 'active')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<', now())
+            ->update(['status' => 'expired']);
+
+        // Now get the active package after clearing expired ones
         $record = $this->userPackages()
             ->where('status', 'active')
             ->where(function ($q) {
@@ -97,20 +104,21 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
             ->latest('starts_at')
             ->first();
 
-        // Create FREE package if user has no active package
+        // Create FREE package if none exists
         if (!$record) {
             $freePackage = Package::where('price', 0)->firstOrFail();
 
             $record = $this->userPackages()->create([
-                'package_id'  => $freePackage->id,
-                'starts_at'   => now(),
-                'expires_at'  => null,
-                'status'      => 'active',
+                'package_id' => $freePackage->id,
+                'starts_at'  => now(),
+                'expires_at' => null,
+                'status'     => 'active',
             ]);
         }
 
         return $record;
     }
+
 
 
     /**

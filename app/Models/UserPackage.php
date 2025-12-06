@@ -36,6 +36,23 @@ class UserPackage extends Model
 
 
     /**
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::retrieved(function (UserPackage $package) {
+            if (
+                $package->status === 'active' &&
+                $package->expires_at &&
+                $package->expires_at < now()
+            ) {
+                $package->update(['status' => 'expired']);
+            }
+        });
+    }
+
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()

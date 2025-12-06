@@ -13,4 +13,5 @@ return [
     'error_updating'  => 'Error updating listing.',
     'forbidden'       => 'Forbidden.',
     'photo_not_owned' => 'Photo does not belong to this listing.',
+    'not_found' => 'Listing not found.',
 ];

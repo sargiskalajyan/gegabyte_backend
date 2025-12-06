@@ -50,6 +50,9 @@ class AuthController extends Controller
             'language_id'  => $langModel->id,
         ]);
 
+        // ⭐ Automatically assign FREE package on registration
+        $user->activePackage();
+
         // Generate 6-digit verification code
         $code = rand(100000, 999999);
 
