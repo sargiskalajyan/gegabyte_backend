@@ -14,4 +14,34 @@ return [
     'forbidden'       => 'Մատչելն արգելված է։',
     'photo_not_owned' => 'Նկարը չի պատկանում տվյալ հայտարարությանը։',
     'not_found' => 'Հայտի չի գտնվել։',
+
+    'title' => 'Հայտարարություններ',
+    'photos' => 'Նկարներ',
+    'id' => 'ID',
+    'make_model' => 'Մարկա/Մոդել',
+    'description' => 'Նկարագրություն',
+    'price' => 'Գին',
+    'user' => 'Օգտատեր',
+    'status' => 'Կարգավիճակ',
+    'change' => 'Փոփոխել',
+    'gallery' => 'Պատկերասրահ',
+    'delete' => 'Ջնջել',
+    'close' => 'Փակել',
+    'just_now' => 'Հիմա',
+
+    'toast_title' => 'Ծանուցում',
+
+    'statuses' => [
+        'draft'     => 'Սևագիր',
+        'pending'   => 'Սպասում է',
+        'published' => 'Հրապարակված',
+        'rejected'  => 'Մերժված',
+        'expired'   => 'Ժամկետանց',
+    ],
+
+    'status_updated_title'   => 'Հայտարարությունը թարմացվել է',
+    'status_updated_message' => 'Հայտարարություն №:id-ը թարմացվել է «:status»-ի',
+
+    'deleted_title'   => 'Ջնջված է',
+    'deleted_message' => 'Լուսանկարը հեռացվել է։',
 ];

@@ -50,6 +50,7 @@ return [
         'price'           => 'price',
         'vin'             => 'VIN',
         'images.*'        => 'image',
+        'old_password'    => 'current password',
 
     ],
     'more_errors' => 'and :count more errors',

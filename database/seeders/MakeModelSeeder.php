@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class MakeModelSeeder extends Seeder
 {
+
+    /**
+     * @return void
+     */
     public function run()
     {
         // Load language codes => IDs from the languages table

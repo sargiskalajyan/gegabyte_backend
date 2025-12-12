@@ -14,4 +14,34 @@ return [
     'forbidden'       => 'Forbidden.',
     'photo_not_owned' => 'Photo does not belong to this listing.',
     'not_found' => 'Listing not found.',
+
+    'title' => 'Listings',
+    'photos' => 'Photos',
+    'id' => 'ID',
+    'make_model' => 'Make/Model',
+    'description' => 'Description',
+    'price' => 'Price',
+    'user' => 'User',
+    'status' => 'Status',
+    'change' => 'Change',
+    'gallery' => 'Gallery',
+    'delete' => 'Delete',
+    'close' => 'Close',
+    'just_now' => 'Just now',
+
+    'toast_title' => 'Notification',
+
+    'statuses' => [
+        'draft'     => 'Draft',
+        'pending'   => 'Pending',
+        'published' => 'Published',
+        'rejected'  => 'Rejected',
+        'expired'   => 'Expired',
+    ],
+
+    'status_updated_title'   => 'Listing Updated',
+    'status_updated_message' => 'Listing #:id updated to ":status"',
+
+    'deleted_title'   => 'Deleted',
+    'deleted_message' => 'Photo removed.',
 ];

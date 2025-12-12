@@ -14,4 +14,34 @@ return [
     'forbidden'       => 'Доступ запрещён.',
     'photo_not_owned' => 'Фотография не принадлежит этому объявлению.',
     'not_found' => 'Объявление не найдено.',
+
+    'title' => 'Объявления',
+    'photos' => 'Фото',
+    'id' => 'ID',
+    'make_model' => 'Марка/Модель',
+    'description' => 'Описание',
+    'price' => 'Цена',
+    'user' => 'Пользователь',
+    'status' => 'Статус',
+    'change' => 'Изменить',
+    'gallery' => 'Галерея',
+    'delete' => 'Удалить',
+    'close' => 'Закрыть',
+    'just_now' => 'Только что',
+
+    'toast_title' => 'Уведомление',
+
+    'statuses' => [
+        'draft'     => 'Черновик',
+        'pending'   => 'Ожидает',
+        'published' => 'Опубликовано',
+        'rejected'  => 'Отклонено',
+        'expired'   => 'Истекло',
+    ],
+
+    'status_updated_title'   => 'Статус обновлён',
+    'status_updated_message' => 'Объявление №:id обновлено на «:status»',
+
+    'deleted_title'   => 'Удалено',
+    'deleted_message' => 'Фотография была удалена.',
 ];

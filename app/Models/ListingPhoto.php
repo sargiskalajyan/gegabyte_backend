@@ -16,6 +16,32 @@ class ListingPhoto extends Model
 
 
     /**
+     * @param $value
+     * @return string
+     */
+    public function getUrlAttribute($value)
+    {
+        // if the raw DB value already looks like a URL, return it
+        if (preg_match('/^https?:\/\//', $value)) {
+            return $value;
+        }
+
+        return asset('storage/' . $value);
+    }
+
+
+    /**
+     * @param $value
+     * @return string|null
+     */
+    public function getThumbnailAttribute($value)
+    {
+        if (! $value) return null;
+        if (preg_match('/^https?:\/\//', $value)) return $value;
+        return asset('storage/' . $value);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function listing()

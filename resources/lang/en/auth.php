@@ -17,4 +17,9 @@ return [
     'token_expired'          => 'Token expired!',
     'unauthenticated'        => 'Unauthenticated, you must be logged in to access this resource.',
     'session_expired'        => 'Your session has expired. Please log in again.',
+    'email' => 'Email',
+    'password' => 'Password',
+    'remember_me' => 'Remember me',
+    'sign_in' => 'Sign in',
+    'invalid_credentials' => 'Your provided credentials could not be verified.'
 ];
