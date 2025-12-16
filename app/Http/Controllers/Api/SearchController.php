@@ -18,6 +18,7 @@ use App\Models\Fuel;
 use App\Models\Language;
 use App\Models\Listing;
 use App\Models\Location;
+use App\Models\Make;
 use App\Models\Package;
 use App\Models\Transmission;
 use Illuminate\Http\Request;
@@ -214,6 +215,7 @@ class SearchController extends Controller
                 'drivetrains'   => Drivetrain::with('translation')->get(),
                 'conditions'    => Condition::with('translation')->get(),
                 'locations'     => Location::with('translation')->get(),
+                'makes'         => Make::with('translation')->get(),
                 'models'        => CarModel::with('translation')->get(),
                 'colors'        => Color::with('translation')->get(),
                 'driver_types'  => DriverType::with('translation')->get(),
