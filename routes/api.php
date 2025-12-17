@@ -55,7 +55,8 @@ Route::group([
     Route::middleware('auth:api')->group(function () {
         Route::post('refresh',  [AuthController::class, 'refresh']);
         Route::post('logout',   [AuthController::class, 'logout']);
-        Route::post('/password/change', [AuthController::class, 'changePassword']);
+        Route::post('password/change', [AuthController::class, 'changePassword']);
+        Route::post('profile/update',   [AuthController::class, 'updateProfile']);
 
         Route::group(['prefix' => 'listings'], function () {
             Route::get('/', [ListingController::class, 'index']);

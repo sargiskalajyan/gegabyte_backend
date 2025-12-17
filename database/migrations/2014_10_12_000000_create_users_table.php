@@ -17,9 +17,9 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('languages')
                 ->onDelete('set null');
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->string('email')->unique();
-            $table->string('phone_number')->unique();
+            $table->string('phone_number')->nullable()->unique();
             $table->string('profile_image')->nullable();
             $table->string('password');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');

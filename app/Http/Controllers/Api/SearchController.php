@@ -223,6 +223,7 @@ class SearchController extends Controller
                 'engine_sizes'  => EngineSize::with('translation')->get(),
                 'engines'       => Engine::with('translation')->get(),
                 'packages'      => Package::with('translation')->get(),
+                'languages'     => Language::all(),
                 'years'         => range(date('Y'), 1980),
             ];
         });

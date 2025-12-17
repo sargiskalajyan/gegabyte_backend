@@ -20,7 +20,10 @@ class UserResource extends JsonResource
             'email'       => $this->email,
             'phone_number'=> $this->phone_number,
             'language_id' => $this->language_id,
-            'created_at'  => $this->created_at,
+            'created_at'  => $this->created_at?->toDateTimeString(),
+            'profile_image' => $this->profile_image
+                ? asset('storage/' . $this->profile_image)
+                : null,
         ];
     }
 }

@@ -3,20 +3,43 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class RegisterRequest extends FormRequest
+class UpdateProfileRequest extends FormRequest
 {
+
+
+    /**
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
+        $user = $this->user('api'); // authenticated user
+
         return [
-            'email'     => 'required|email|unique:users',
-            'password' => [
-                'required',
+            'username' => ['nullable', 'string', 'max:255'],
+
+            'phone_number' => [
+                'nullable',
                 'string',
-                'min:8',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/',
-                'confirmed',
+                Rule::unique('users', 'phone_number')->ignore($user?->id),
+            ],
+
+            'language_id' => ['nullable', 'exists:languages,id'],
+
+            'location_id' => ['nullable', 'exists:locations,id'],
+
+            'profile_image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
             ],
         ];
     }
@@ -45,14 +68,4 @@ class RegisterRequest extends FormRequest
         ], 422));
     }
 
-
-    /**
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            'password.regex' => __('validation.password_regex'),
-        ];
-    }
 }

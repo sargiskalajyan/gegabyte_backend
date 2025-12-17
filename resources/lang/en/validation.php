@@ -51,6 +51,7 @@ return [
         'vin'             => 'VIN',
         'images.*'        => 'image',
         'old_password'    => 'current password',
+        'profile_image'   => 'profile image',
 
     ],
     'more_errors' => 'and :count more errors',

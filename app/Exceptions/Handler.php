@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -37,58 +38,57 @@ class Handler extends ExceptionHandler
     /**
      * Determine language from URL segment or Accept-Language header
      */
-    protected function getRequestLanguage($request)
+    protected function getRequestLanguage(Request $request): string
     {
         $lang = $request->segment(2) ?: $request->header('Accept-Language');
+
         $langModel = \App\Models\Language::where('code', $lang)->first();
+
         return $langModel->code ?? 'en';
     }
 
     /**
-     * Render an exception into an HTTP response.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Throwable $exception
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
-     * @throws Throwable
+     * Handle unauthenticated (JWT) requests
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        app()->setLocale($this->getRequestLanguage($request));
+
+        try {
+            $token = JWTAuth::getToken();
+
+            // No token provided
+            if (!$token) {
+                return response()->json([
+                    'error' => __('auth.token_not_provided'),
+                ], 401);
+            }
+
+            // Check token validity (without re-authenticating)
+            JWTAuth::setToken($token)->check();
+
+            return response()->json([
+                'error' => __('auth.unauthenticated'),
+            ], 401);
+
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'error' => __('auth.token_expired'),
+            ], 419);
+
+        } catch (JWTException $e) {
+            return response()->json([
+                'error' => __('auth.unauthenticated'),
+            ], 401);
+        }
+    }
+
+    /**
+     * Render exceptions
      */
     public function render($request, Throwable $exception)
     {
-        // Always set locale for translations
         app()->setLocale($this->getRequestLanguage($request));
-
-        // Handle JWT / Authentication exceptions
-        if ($exception instanceof AuthenticationException) {
-            try {
-                $token = JWTAuth::getToken();
-                JWTAuth::checkOrFail($token);
-            } catch (TokenExpiredException $e) {
-                // Ensure locale is set inside catch
-                app()->setLocale($this->getRequestLanguage($request));
-
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'error' => __('auth.token_expired'),
-                        'validation' => false
-                    ], 419);
-                }
-
-                return redirect()->guest('/')
-                    ->withErrors(['token' => __('auth.session_expired')]);
-            } catch (JWTException $e) {
-                // Ensure locale is set inside catch
-                app()->setLocale($this->getRequestLanguage($request));
-
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'error' => __('auth.unauthenticated'),
-                    ], 403);
-                }
-
-                return redirect()->guest('/')
-                    ->withErrors(['auth' => __('auth.unauthenticated')]);
-            }
-        }
 
         return parent::render($request, $exception);
     }

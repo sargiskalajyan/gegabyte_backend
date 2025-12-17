@@ -12,7 +12,7 @@ class DrivetrainSeeder extends Seeder
         $languages = DB::table('languages')->pluck('id', 'code')->toArray();
 
         $items = [
-            ['hy'=>'Առևր', 'en'=>'FWD', 'ru'=>'Передний'],
+            ['hy'=>'Առջև', 'en'=>'FWD', 'ru'=>'Передний'],
             ['hy'=>'Հետև', 'en'=>'RWD', 'ru'=>'Задний'],
             ['hy'=>'Ամբողջական', 'en'=>'AWD / 4x4', 'ru'=>'Полный привод'],
         ];

@@ -7,12 +7,15 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Language;
 use App\Models\User;
 use App\Notifications\VerifyCodeMail;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -43,9 +46,7 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user = User::create([
-            'username'     => $data['username'],
             'email'        => $data['email'],
-            'phone_number' => $data['phone_number'],
             'password'     => Hash::make($data['password']),
             'language_id'  => $langModel->id,
         ]);
@@ -232,6 +233,56 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => __('auth.password_changed_success'),
+        ]);
+    }
+
+
+    /**
+     * @param UpdateProfileRequest $request
+     * @param $lang
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateProfile(UpdateProfileRequest $request, $lang)
+    {
+        $langModel = Language::where('code', $lang)->first();
+        app()->setLocale($langModel->code);
+
+        $user = auth('api')->user();
+
+        $request->validate([
+            'username'      => ['nullable', 'string', 'max:255'],
+            'phone_number'  => [
+                'nullable',
+                'string',
+                Rule::unique('users', 'phone_number')->ignore($user->id),
+            ],
+            'language_id'   => ['nullable', 'exists:languages,id'],
+            'location_id'   => ['nullable', 'exists:locations,id'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('profile_image')) {
+            if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
+                Storage::disk('public')->delete($user->profile_image);
+            }
+
+            $path = $request->file('profile_image')
+                ->store('profiles', 'public');
+
+            $user->profile_image = $path;
+        }
+
+        // Update other fields
+        $user->update([
+            'username'     => $request->username ?? $user->username,
+            'phone_number' => $request->phone_number ?? $user->phone_number,
+            'language_id'  => $request->language_id ?? $user->language_id,
+            'location_id'  => $request->location_id ?? $user->location_id,
+        ]);
+
+        return response()->json([
+            'message' => __('auth.profile_updated'),
+            'user'    => new UserResource($user),
         ]);
     }
 
