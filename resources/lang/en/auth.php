@@ -21,5 +21,9 @@ return [
     'password' => 'Password',
     'remember_me' => 'Remember me',
     'sign_in' => 'Sign in',
-    'invalid_credentials' => 'Your provided credentials could not be verified.'
+    'invalid_credentials' => 'Your provided credentials could not be verified.',
+    'email_not_verified' => 'Your email address has not been verified.',
+    'phone_required' => 'Please add your phone number first.',
+    'phone_not_verified' => 'Your phone number has not been verified.',
+    'too_many_attempts' => 'Too many attempts. Please try again in :minutes minute(s).',
 ];

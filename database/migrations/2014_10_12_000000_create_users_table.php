@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->string('password');
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
+            $table->timestamp('phone_number_verified_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

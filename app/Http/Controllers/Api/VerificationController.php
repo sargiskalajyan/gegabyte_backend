@@ -24,7 +24,19 @@ class VerificationController extends Controller
             'code'  => 'required|digits:6',
         ]);
 
-        $cachedCode = cache()->get("verify_code_{$request->email}");
+        $email = $request->email;
+        $cachedCode = cache()->get("verify_code_{$email}");
+        $attemptsKey = "verify_code_attempts_{$email}";
+
+        // Check if user is temporarily blocked
+        $attemptsData = cache()->get($attemptsKey, ['count' => 0, 'blocked_until' => null]);
+
+        if ($attemptsData['blocked_until'] && now()->lessThan($attemptsData['blocked_until'])) {
+            $waitSeconds = now()->diffInSeconds($attemptsData['blocked_until']);
+            return response()->json([
+                'message' => __('auth.too_many_attempts', ['minutes' => ceil($waitSeconds / 60)])
+            ], 429);
+        }
 
         if (!$cachedCode) {
             return response()->json([
@@ -33,22 +45,36 @@ class VerificationController extends Controller
         }
 
         if ($cachedCode != $request->code) {
+            // Increment attempt count
+            $attemptsData['count']++;
+
+            if ($attemptsData['count'] >= 3) {
+                // Block for 10 minutes
+                $attemptsData['blocked_until'] = now()->addMinutes(10);
+                $attemptsData['count'] = 0; // reset attempts after blocking
+            }
+
+            cache()->put($attemptsKey, $attemptsData, $attemptsData['blocked_until'] ?? now()->addMinutes(10));
+
             return response()->json([
                 'message' => __('auth.invalid_code')
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        // Success: reset attempts
+        cache()->forget($attemptsKey);
 
+        $user = User::where('email', $email)->first();
         $user->email_verified_at = now();
         $user->save();
 
-        cache()->forget("verify_code_{$user->email}");
+        cache()->forget("verify_code_{$email}");
 
         return response()->json([
             'message' => __('auth.email_verified_success'),
         ]);
     }
+
 
     /**
      * Resend code (again no DB)

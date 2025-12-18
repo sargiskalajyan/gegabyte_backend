@@ -83,7 +83,15 @@ class AuthController extends Controller
             return response()->json(['message' => __('auth.failed')], 401);
         }
 
-        $user       = auth('api')->user();
+        $user = auth('api')->user();
+
+        if (is_null($user->email_verified_at)) {
+            auth('api')->logout();
+            return response()->json([
+                'message' => __('auth.email_not_verified')
+            ], 403);
+        }
+
         $seconds    = auth('api')->factory()->getTTL() * 60;
 
         return response()->json([
