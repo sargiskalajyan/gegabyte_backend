@@ -132,7 +132,8 @@ class SearchController extends Controller
                     ->where('l_loc.code', $lang);
             })
 
-            ->with(['photos', 'user']); // eager loading
+            ->with(['photos', 'user']) // eager loading
+            ->where('listings.status', '=','published');
 
 
         // ------------------ APPLY FILTERS ------------------
@@ -189,6 +190,7 @@ class SearchController extends Controller
     {
         $listing = Listing::with('photos')
             ->where('id', $listingId)
+            ->where('status', '=','published')
             ->first();
 
         if (!$listing) {

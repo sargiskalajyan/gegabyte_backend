@@ -19,23 +19,23 @@ class Package extends Model
         'is_active'
     ];
 
-    // Migration now uses timestamps, so enable them
+    /**
+     * @var bool
+     */
     public $timestamps = true;
 
-    /*
-     |--------------------------------------------------------------------------
-     | Relationships
-     |--------------------------------------------------------------------------
-     */
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function translations()
     {
         return $this->hasMany(PackageTranslation::class);
     }
 
+
     /**
-     * Return translation for the current app locale.
-     * Falls back to English if missing.
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function translation()
     {
@@ -47,14 +47,14 @@ class Package extends Model
             });
     }
 
+
     /**
-     * Convenience accessor: $package->name
+     * @return \Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string
      */
     public function getNameAttribute()
     {
         $translation = $this->translation()->first();
 
-        // Fallback to English if missing
         if (!$translation) {
             $translation = $this->translations()
                 ->whereHas('language', fn($q) => $q->where('code', 'en'))

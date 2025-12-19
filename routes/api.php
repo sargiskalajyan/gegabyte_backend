@@ -57,6 +57,7 @@ Route::group([
         Route::post('logout',   [AuthController::class, 'logout']);
         Route::post('password/change', [AuthController::class, 'changePassword']);
         Route::post('profile/update',   [AuthController::class, 'updateProfile']);
+        Route::get('user',  [AuthController::class, 'user']);
 
         Route::group(['prefix' => 'listings'], function () {
             Route::get('/', [ListingController::class, 'index']);

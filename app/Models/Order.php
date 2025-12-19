@@ -19,8 +19,14 @@ class Order extends Model
      * @var string[]
      */
     protected $fillable = [
-        'user_id','package_id','amount','currency','gateway','status',
-        'reference','payload','idempotency_key','meta'
+        'user_id',
+        'package_id',
+        'amount',
+        'gateway',
+        'status',
+        'reference',
+        'payload',
+        'idempotency_key',
     ];
 
 
@@ -29,7 +35,6 @@ class Order extends Model
      */
     protected $casts = [
         'payload' => 'array',
-        'meta' => 'array',
     ];
 
 

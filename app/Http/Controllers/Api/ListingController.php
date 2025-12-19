@@ -100,21 +100,6 @@ class ListingController extends Controller
 
         $user = auth('api')->user();
 
-
-        if (empty($user->phone_number)) {
-            return response()->json([
-                'message' => __('auth.phone_required')
-            ], 403);
-        }
-
-
-//        if (is_null($user->phone_number_verified_at)) {
-//            return response()->json([
-//                'message' => __('auth.phone_not_verified')
-//            ], 403);
-//        }
-
-
         $userPackage = $user->activePackage();
         $package     = $userPackage->package;
 

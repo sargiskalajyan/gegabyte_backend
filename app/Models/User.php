@@ -20,13 +20,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'password',
-        'language_id',
-        'phone_number',
-        'profile_image',
-        'location_id'
+        'username','email','password','language_id','phone_number','profile_image','location_id'
     ];
 
 
@@ -47,7 +41,6 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'phone_number_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
