@@ -15,12 +15,18 @@ use App\Models\Drivetrain;
 use App\Models\Engine;
 use App\Models\EngineSize;
 use App\Models\Fuel;
+use App\Models\GasEquipment;
+use App\Models\Headlight;
+use App\Models\InteriorColor;
+use App\Models\InteriorMaterial;
 use App\Models\Language;
 use App\Models\Listing;
 use App\Models\Location;
 use App\Models\Make;
 use App\Models\Package;
+use App\Models\SteeringWheel;
 use App\Models\Transmission;
+use App\Models\WheelSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -227,6 +233,13 @@ class SearchController extends Controller
                 'packages'      => Package::with('translation')->get(),
                 'languages'     => Language::all(),
                 'years'         => range(date('Y'), 1980),
+
+                'gas_equipments'=> GasEquipment::with('translation')->get(),
+                'wheel_sizes'   => WheelSize::with('translation')->get(),
+                'headlights'    => Headlight::with('translation')->get(),
+                'interior_colors' => InteriorColor::with('translation')->get(),
+                'interior_materials' => InteriorMaterial::with('translation')->get(),
+                'steering_wheels' => SteeringWheel::with('translation')->get(),
             ];
         });
     }

@@ -34,7 +34,14 @@ class DatabaseSeeder extends Seeder
             EngineSizeSeeder::class,
             MakeModelSeeder::class,
             PackageSeeder::class,
-            EngineSeeder::class
+            EngineSeeder::class,
+
+            GasEquipmentSeeder::class,
+            WheelSizeSeeder::class,
+            HeadlightsSeeder::class,
+            InteriorColorSeeder::class,
+            InteriorMaterialSeeder::class,
+            SteeringWheelSeeder::class,
         ]);
 
 

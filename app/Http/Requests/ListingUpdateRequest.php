@@ -28,10 +28,18 @@ class ListingUpdateRequest extends FormRequest
             'currency_id'     => 'nullable|exists:currencies,id',
             'driver_type_id'  => 'nullable|exists:driver_types,id',
 
+            'gas_equipment_id'      => 'nullable|exists:gas_equipments,id',
+            'wheel_size_id'         => 'nullable|exists:wheel_sizes,id',
+            'headlight_id'          => 'nullable|exists:headlights,id',
+            'interior_color_id'     => 'nullable|exists:interior_colors,id',
+            'interior_material_id'  => 'nullable|exists:interior_materials,id',
+            'steering_wheel_id'     => 'nullable|exists:steering_wheels,id',
+
             'year'       => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
             'mileage'    => 'nullable|integer|min:0',
             'price'      => 'nullable|numeric|min:0',
             'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin,' . $this->route('listing'),
+            'exchange'   => 'sometimes|boolean',
 
             'description'       => 'required|string|max:500',
 

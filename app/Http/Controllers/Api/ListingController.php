@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class ListingController extends Controller
+class  ListingController extends Controller
 {
 
     /**
@@ -143,12 +143,21 @@ class ListingController extends Controller
                 'color_id'        => $request->color_id,
                 'currency_id'     => $request->currency_id,
                 'driver_type_id'  => $request->driver_type_id,
+
+                'gas_equipment_id'      => $request->gas_equipment_id,
+                'wheel_size_id'         => $request->wheel_size_id,
+                'headlight_id'          => $request->headlight_id,
+                'interior_color_id'     => $request->interior_color_id,
+                'interior_material_id'  => $request->interior_material_id,
+                'steering_wheel_id'     => $request->steering_wheel_id,
+
+
                 'year'        => $request->year,
                 'mileage'     => $request->mileage,
                 'price'       => $request->price,
                 'description' => $request->description,
                 'vin'         => $request->vin,
-                'title'       => $request->title,
+                'exchange'    => $request->exchange ?? false,
             ]);
 
             /**
@@ -220,7 +229,6 @@ class ListingController extends Controller
 
         try {
             DB::beginTransaction();
-
 
             if ($request->car_model_id) {
                 $carModel = CarModel::find($request->car_model_id);

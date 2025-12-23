@@ -13,7 +13,7 @@ class CategorySeeder extends Seeder
         $languages = DB::table('languages')->pluck('id', 'code')->toArray();
 
         $items = [
-            ['hy' => 'Մեքենաներ',      'en' => 'Cars',         'ru' => 'Авто'],
+            ['hy' => 'Մեքենաներ',     'en' => 'Cars',         'ru' => 'Авто'],
             ['hy' => 'Մոտոցիկլներ',   'en' => 'Motorcycles',  'ru' => 'Мотоциклы'],
             ['hy' => 'Բեռնատարներ',   'en' => 'Trucks',       'ru' => 'Грузовики'],
         ];

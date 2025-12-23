@@ -27,12 +27,21 @@ return new class extends Migration
             $table->foreignId('currency_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('driver_type_id')->nullable()->constrained()->nullOnDelete();
 
+            $table->foreignId('gas_equipment_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('wheel_size_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('headlight_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('interior_color_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('interior_material_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('steering_wheel_id')->nullable()->constrained()->nullOnDelete();
+
+
+
             // Core Data
             $table->year('year')->nullable();
             $table->unsignedInteger('mileage')->nullable();
             $table->string('vin', 17)->nullable()->unique();
             $table->decimal('price', 12, 2)->nullable();
-
+            $table->boolean('exchange')->default(false);
             $table->text('description');
 
             // Status
@@ -41,27 +50,25 @@ return new class extends Migration
 
             $table->timestamp('featured_until')->nullable();
             $table->timestamp('published_until')->nullable();
-
             $table->unsignedInteger('views')->default(0);
 
             $table->timestamps();
 
-            $table->index([
-                'user_id','category_id','fuel_id','transmission_id','drivetrain_id',
-                'condition_id','location_id','make_id','car_model_id','engine_id',
-                'engine_size_id', 'color_id','currency_id','driver_type_id'
-            ], 'listing_relations_idx');  // <= SHORT NAME FIX
+            // Common filters
+            $table->index(['status', 'exchange'], 'listing_status_exchange_idx');
+            $table->index(['status', 'category_id'], 'listing_status_category_idx');
+            $table->index(['make_id', 'car_model_id'], 'listing_make_model_idx');
+            $table->index(['location_id', 'category_id'], 'listing_location_category_idx');
 
-            // Searchable fields
+            // Search / sorting
             $table->index('price', 'listing_price_idx');
             $table->index('year', 'listing_year_idx');
             $table->index('mileage', 'listing_mileage_idx');
-            $table->index('status', 'listing_status_idx');
+            $table->index('views', 'listing_views_idx');
             $table->index('featured_until', 'listing_featured_idx');
             $table->index('published_until', 'listing_published_idx');
-            $table->index('views', 'listing_views_idx');
 
-            // FULL TEXT SEARCH
+            // Full-text search
             $table->fullText(['description'], 'listing_fulltext_idx');
         });
 

@@ -21,6 +21,7 @@ class ListingResource extends JsonResource
             'year'        => $this->year,
             'mileage'     => $this->mileage,
             'vin'         => $this->vin,
+            'exchange'    => $this->exchange,
 
             // Related objects: only include if ID exists
             'make' => $this->make_id ? [
@@ -76,8 +77,8 @@ class ListingResource extends JsonResource
             'photos' => $this->photos->map(function ($photo) {
                 return [
                     'id'        => $photo->id,
-                    'url'       => $this->fullUrl($photo->url),
-                    'thumbnail' => $this->fullUrl($photo->thumbnail),
+                    'url'       => $photo->url,
+                    'thumbnail' => $photo->thumbnail,
                 ];
             }),
 
