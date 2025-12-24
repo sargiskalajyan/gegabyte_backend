@@ -20,7 +20,7 @@ class VerificationController extends Controller
     public function verifyCode(Request $request, $lang)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string|max:255|exists:users,email',
             'code'  => 'required|digits:6',
         ]);
 
