@@ -21,72 +21,40 @@ class ListingResource extends JsonResource
             'year'        => $this->year,
             'mileage'     => $this->mileage,
             'vin'         => $this->vin,
-            'exchange'    => $this->exchange,
+            'exchange'    => (integer)$this->exchange,
 
-            // Related objects: only include if ID exists
-            'make' => $this->make_id ? [
-                'id'   => $this->make_id,
-                'name' => $this->make_name,
-            ] : null,
+            // MAIN RELATIONS
+            'make'               => $this->relationData($this->make_id, $this->make_name),
+            'model'              => $this->relationData($this->car_model_id, $this->model_name),
+            'fuel'               => $this->relationData($this->fuel_id, $this->fuel_name),
+            'transmission'       => $this->relationData($this->transmission_id, $this->transmission_name),
+            'drivetrain'         => $this->relationData($this->drivetrain_id, $this->drivetrain_name),
+            'condition'          => $this->relationData($this->condition_id, $this->condition_name),
+            'color'              => $this->relationData($this->color_id, $this->color_name),
+            'driver_type'        => $this->relationData($this->driver_type_id, $this->driver_type_name),
+            'category'           => $this->relationData($this->category_id, $this->category_name),
+            'location'           => $this->relationData($this->location_id, $this->location_name),
 
-            'model' => $this->car_model_id ? [
-                'id'   => $this->car_model_id,
-                'name' => $this->model_name,
-            ] : null,
+            // NEW RELATIONS
+            'gas_equipment'      => $this->relationData($this->gas_equipment_id, $this->gas_equipment_name),
+            'wheel_size'         => $this->relationData($this->wheel_size_id, $this->wheel_size_name),
+            'headlight'          => $this->relationData($this->headlight_id, $this->headlight_name),
+            'interior_color'     => $this->relationData($this->interior_color_id, $this->interior_color_name),
+            'interior_material'  => $this->relationData($this->interior_material_id, $this->interior_material_name),
+            'steering_wheel'     => $this->relationData($this->steering_wheel_id, $this->steering_wheel_name),
 
-            'fuel' => $this->fuel_id ? [
-                'id'   => $this->fuel_id,
-                'name' => $this->fuel_name,
-            ] : null,
+            // PHOTOS
+            'photos' => $this->photos->map(fn ($photo) => [
+                'id'        => $photo->id,
+                'url'       => $photo->url,
+                'thumbnail' => $photo->thumbnail,
+            ]),
 
-            'transmission' => $this->transmission_id ? [
-                'id'   => $this->transmission_id,
-                'name' => $this->transmission_name,
-            ] : null,
-
-            'drivetrain' => $this->drivetrain_id ? [
-                'id'   => $this->drivetrain_id,
-                'name' => $this->drivetrain_name,
-            ] : null,
-
-            'condition' => $this->condition_id ? [
-                'id'   => $this->condition_id,
-                'name' => $this->condition_name,
-            ] : null,
-
-            'color' => $this->color_id ? [
-                'id'   => $this->color_id,
-                'name' => $this->color_name,
-            ] : null,
-
-            'driver_type' => $this->driver_type_id ? [
-                'id'   => $this->driver_type_id,
-                'name' => $this->driver_type_name,
-            ] : null,
-
-            'category' => $this->category_id ? [
-                'id'   => $this->category_id,
-                'name' => $this->category_name,
-            ] : null,
-
-            'location' => $this->location_id ? [
-                'id'   => $this->location_id,
-                'name' => $this->location_name,
-            ] : null,
-
-            'photos' => $this->photos->map(function ($photo) {
-                return [
-                    'id'        => $photo->id,
-                    'url'       => $photo->url,
-                    'thumbnail' => $photo->thumbnail,
-                ];
-            }),
-
+            // USER
             'user' => $this->user ? [
-                'id'       => $this->user->id,
-                'username' => $this->user->username,
-                'phone_number'=> $this->user->phone_number,
-
+                'id'           => $this->user->id,
+                'username'     => $this->user->username,
+                'phone_number' => $this->user->phone_number,
             ] : null,
 
             'created_at' => $this->created_at?->toDateTimeString(),
@@ -96,11 +64,15 @@ class ListingResource extends JsonResource
 
 
     /**
-     * @param $path
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\UrlGenerator|\Illuminate\Foundation\Application|string|null
+     * @param $id
+     * @param $name
+     * @return array|null
      */
-    private function fullUrl($path)
+    private function relationData($id, $name)
     {
-        return $path ? url('storage/' . $path) : null;
+        return $id ? [
+            'id'   => $id,
+            'name' => $name,
+        ] : null;
     }
 }

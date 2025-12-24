@@ -25,6 +25,12 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 
 
     /**
+     * @var string[]
+     */
+    protected $appends = ['location_name'];
+
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -57,6 +63,19 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      */
     public function getJWTCustomClaims() {
         return [];
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getLocationNameAttribute(): ?string
+    {
+
+        if (!empty($this->attributes['location_name'])) {
+            return $this->attributes['location_name'];
+        }
+        return $this->location?->name;
     }
 
 

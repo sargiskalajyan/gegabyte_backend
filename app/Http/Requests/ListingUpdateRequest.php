@@ -39,7 +39,7 @@ class ListingUpdateRequest extends FormRequest
             'mileage'    => 'nullable|integer|min:0',
             'price'      => 'nullable|numeric|min:0',
             'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin,' . $this->route('listing'),
-            'exchange'   => 'sometimes|boolean',
+            'exchange'   => 'sometimes|in:0,1',
 
             'description'       => 'required|string|max:500',
 

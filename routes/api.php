@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,12 @@ Route::group([
         Route::get('/list',  [SearchController::class, 'list']);
         Route::get('/models/{id}',  [SearchController::class, 'models']);
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
+    });
+
+
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('/{user}', [UserController::class, 'show']);
+        Route::get('/{user}/listings', [UserController::class, 'userListings']);
     });
 
     Route::post('payments/webhook/{gateway}', [OrderController::class, 'webhook']);

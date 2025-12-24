@@ -177,6 +177,10 @@ class SearchController extends Controller
             $query->where('listings.description', 'LIKE', "%{$validated['keyword']}%");
         }
 
+        if (isset($validated['exchange'])) {
+            $query->where('listings.exchange', (bool) $validated['exchange']);
+        }
+
         // Order & paginate
         $query->orderBy('listings.created_at', 'DESC');
 

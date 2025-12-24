@@ -41,7 +41,7 @@ class ListingRequest extends FormRequest
             'mileage'    => 'nullable|integer|min:0',
             'price'      => 'nullable|numeric|min:0',
             'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin',
-            'exchange'   => 'sometimes|boolean',
+            'exchange'   => 'sometimes|in:0,1',
 
             'description' => 'required|string|max:500',
 
