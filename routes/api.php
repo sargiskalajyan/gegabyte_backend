@@ -41,12 +41,14 @@ Route::group([
 
     Route::group(['prefix' => 'password'], function () {
         Route::post('/forgot', [AuthController::class, 'forgotPassword']);
+        Route::post('/verify-code', [AuthController::class, 'verifyResetCode']);
         Route::post('/reset',  [AuthController::class, 'resetPassword']);
     });
 
     Route::group(['prefix' => 'search'], function () {
         Route::get('/', [SearchController::class, 'index']);
         Route::get('/list',  [SearchController::class, 'list']);
+        Route::get('/listings',  [SearchController::class, 'listings']);
         Route::get('/models/{id}',  [SearchController::class, 'models']);
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });

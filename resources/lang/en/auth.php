@@ -26,4 +26,6 @@ return [
     'phone_required' => 'Please add your phone number first.',
     'phone_not_verified' => 'Your phone number has not been verified.',
     'too_many_attempts' => 'Too many attempts. Please try again in :minutes minute(s).',
+    'code_not_verified' => 'The verification code has not been confirmed.',
+    'code_verified' => 'The verification code has been successfully confirmed.',
 ];

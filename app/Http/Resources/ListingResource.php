@@ -34,6 +34,8 @@ class ListingResource extends JsonResource
             'driver_type'        => $this->relationData($this->driver_type_id, $this->driver_type_name),
             'category'           => $this->relationData($this->category_id, $this->category_name),
             'location'           => $this->relationData($this->location_id, $this->location_name),
+            'engine'             => $this->relationData($this->engine_id, $this->engine_name),
+            'engine_size'        => $this->relationData($this->engine_size_id, $this->engine_size_name),
 
             // NEW RELATIONS
             'gas_equipment'      => $this->relationData($this->gas_equipment_id, $this->gas_equipment_name),
@@ -51,11 +53,15 @@ class ListingResource extends JsonResource
             ]),
 
             // USER
-            'user' => $this->user ? [
-                'id'           => $this->user->id,
-                'username'     => $this->user->username,
-                'phone_number' => $this->user->phone_number,
-            ] : null,
+//            'user' => $this->user ? [
+//                'id'           => $this->user->id,
+//                'username'     => $this->user->username,
+//                'phone_number' => $this->user->phone_number,
+//            ] : null,
+
+            'user' => $this->whenLoaded('user', function () {
+                return new UserProfileResource($this->user);
+            }),
 
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),

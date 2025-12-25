@@ -34,7 +34,7 @@ class UserProfileResource extends JsonResource
                 'name' => $this->location_name,
             ] : null,
 
-            'listings_count' => $this->listings_count ?? null,
+            'listings_count' => $this->whenCounted('listings'),
             'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }
