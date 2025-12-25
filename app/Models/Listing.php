@@ -9,7 +9,10 @@ class Listing extends Model
     protected $table = 'listings';
     protected $guarded = ['id'];
 
-    // Add the casts property
+
+    /**
+     * @var string[]
+     */
     protected $casts = [
         'exchange' => 'boolean',
     ];
@@ -25,15 +28,29 @@ class Listing extends Model
         'driver_type_name',
         'category_name',
         'location_name',
-        'gas_equipment_name', // Added new accessor
-        'wheel_size_name',    // Added new accessor
-        'headlight_name',     // Added new accessor
-        'interior_color_name',// Added new accessor
-        'interior_material_name',// Added new accessor
-        'steering_wheel_name',// Added new accessor
+        'gas_equipment_name',
+        'wheel_size_name',
+        'headlight_name',
+        'interior_color_name',
+        'interior_material_name',
+        'steering_wheel_name',
+        'engine_name',
+        'engine_size_name',
     ];
 
     /* ----------------------- RELATIONS ----------------------- */
+
+
+    public function engine()
+    {
+        return $this->belongsTo(Engine::class);
+    }
+
+    public function engineSize()
+    {
+        return $this->belongsTo(EngineSize::class);
+    }
+
 
     public function photos()
     {
@@ -217,6 +234,25 @@ class Listing extends Model
     }
 
 
+    public function getEngineNameAttribute()
+    {
+        return $this->joinOrRelation(
+            $this->attributes['engine_name'] ?? null,
+            'engine',
+            'name'
+        );
+    }
+
+    public function getEngineSizeNameAttribute()
+    {
+        return $this->joinOrRelation(
+            $this->attributes['engine_size_name'] ?? null,
+            'engineSize',
+            'name'
+        );
+    }
+
+
     /**
      * @return void
      */
@@ -237,12 +273,14 @@ class Listing extends Model
                 'driver_trans.name AS driver_type_name',
                 'cat_trans.name AS category_name',
                 'loc_trans.name AS location_name',
-                'gas_eq_trans.name AS gas_equipment_name', // Added new select
-                'wheel_s_trans.name AS wheel_size_name',    // Added new select
-                'headlight_trans.name AS headlight_name',   // Added new select
-                'int_color_trans.name AS interior_color_name',// Added new select
-                'int_mat_trans.name AS interior_material_name',// Added new select
-                'steer_w_trans.name AS steering_wheel_name',// Added new select
+                'gas_eq_trans.name AS gas_equipment_name',
+                'wheel_s_trans.name AS wheel_size_name',
+                'headlight_trans.name AS headlight_name',
+                'int_color_trans.name AS interior_color_name',
+                'int_mat_trans.name AS interior_material_name',
+                'steer_w_trans.name AS steering_wheel_name',
+                'engine_trans.name AS engine_name',
+                'engine_size_trans.name AS engine_size_name',
             ])
             // MAKE
             ->leftJoin('make_translations AS make_trans', 'make_trans.make_id', '=', 'listings.make_id')
@@ -308,6 +346,25 @@ class Listing extends Model
             ->leftJoin('steering_wheel_translations AS steer_w_trans', 'steer_w_trans.steering_wheel_id', '=', 'listings.steering_wheel_id')
             ->leftJoin('languages AS lsteer_w', 'lsteer_w.id', '=', 'steer_w_trans.language_id')
             ->where('lsteer_w.code', $lang)
+            // ENGINE
+            ->leftJoin(
+                'engine_translations AS engine_trans',
+                'engine_trans.engine_id',
+                '=',
+                'listings.engine_id'
+            )
+            ->leftJoin('languages AS lengine', 'lengine.id', '=', 'engine_trans.language_id')
+            ->where('lengine.code', $lang)
+
+            // ENGINE SIZE
+            ->leftJoin(
+                'engine_size_translations AS engine_size_trans',
+                'engine_size_trans.engine_size_id',
+                '=',
+                'listings.engine_size_id'
+            )
+            ->leftJoin('languages AS lengine_size', 'lengine_size.id', '=', 'engine_size_trans.language_id')
+            ->where('lengine_size.code', $lang)
 
             ->where('listings.id', $this->id)
             ->first();
