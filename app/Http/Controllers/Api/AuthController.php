@@ -209,45 +209,6 @@ class AuthController extends Controller
         ]);
     }
 
-
-    /**
-     * @param ResetPasswordRequest $request
-     * @param $lang
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-//    public function resetPassword(ResetPasswordRequest $request, $lang)
-//    {
-//        $langModel = Language::where('code', $lang)->first();
-//        app()->setLocale($langModel->code);
-//
-//        $cachedCode = cache()->get("reset_password_code_{$request->email}");
-//        if (!$cachedCode) {
-//            return response()->json([
-//                'message' => __('auth.code_expired'),
-//            ], 422);
-//        }
-//
-//        if ($cachedCode != $request->code) {
-//            return response()->json([
-//                'message' => __('auth.invalid_code'),
-//            ], 422);
-//        }
-//
-//        $user = User::where('email', $request->email)->first();
-//
-//        $user->password = Hash::make($request->password);
-//        $user->save();
-//
-//        cache()->forget("reset_password_code_{$user->email}");
-//
-//        return response()->json([
-//            'message' => __('auth.password_reset_success'),
-//        ]);
-//    }
-
-
     /**
      * @param ResetPasswordRequest $request
      * @param $lang

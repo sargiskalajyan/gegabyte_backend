@@ -50,6 +50,7 @@ Route::group([
         Route::get('/list',  [SearchController::class, 'list']);
         Route::get('/listings',  [SearchController::class, 'listings']);
         Route::get('/models/{id}',  [SearchController::class, 'models']);
+        Route::get('/makes/{id}',  [SearchController::class, 'makes']);
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });
 

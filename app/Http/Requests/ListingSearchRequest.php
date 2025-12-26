@@ -22,8 +22,12 @@ class ListingSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'make_id'         => 'nullable|integer|exists:makes,id',
-            'model_id'        => 'nullable|integer|exists:car_models,id',
+            'make_id'         => 'nullable|array',
+            'make_id.*'       => 'integer|exists:makes,id',
+
+            'model_id'        => 'nullable|array',
+            'model_id.*'      => 'integer|exists:car_models,id',
+
             'fuel_id'         => 'nullable|integer|exists:fuels,id',
             'transmission_id' => 'nullable|integer|exists:transmissions,id',
             'location_id'     => 'nullable|integer|exists:locations,id',

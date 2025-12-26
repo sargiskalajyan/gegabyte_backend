@@ -24,6 +24,10 @@ class CarModel extends Model
      */
     public $timestamps = false;
 
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function make()
     {
         return $this->belongsTo(Make::class);
