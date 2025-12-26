@@ -138,23 +138,44 @@ class SearchController extends Controller
                     ->where('l_loc.code', $lang);
             })
 
-            ->with(['photos', 'user']) // eager loading
-            ->where('listings.status', '=','published');
-
+            ->with(['photos', 'user'])
+            ->where('listings.status', 'published');
 
         // ------------------ APPLY FILTERS ------------------
-        $filters = [
-            'make_id'         => 'listings.make_id',
-            'model_id'        => 'listings.car_model_id',
-            'fuel_id'         => 'listings.fuel_id',
-            'transmission_id' => 'listings.transmission_id',
-            'location_id'     => 'listings.location_id',
-        ];
 
-        foreach ($filters as $input => $column) {
-            if (!empty($validated[$input])) {
-                $query->where($column, $validated[$input]);
+        // ARRAY FILTERS
+//        if (!empty($validated['make_id'])) {
+//            $query->whereIn('listings.make_id', $validated['make_id']);
+//        }
+//
+//        if (!empty($validated['model_id'])) {
+//            $query->whereIn('listings.car_model_id', $validated['model_id']);
+//        }
+
+
+        $query->where(function ($q) use ($validated) {
+
+            if (!empty($validated['make_id'])) {
+                $q->whereIn('listings.make_id', $validated['make_id']);
             }
+
+            if (!empty($validated['model_id'])) {
+                $q->orWhereIn('listings.car_model_id', $validated['model_id']);
+            }
+
+        });
+
+        // SINGLE VALUE FILTERS
+        if (!empty($validated['fuel_id'])) {
+            $query->where('listings.fuel_id', $validated['fuel_id']);
+        }
+
+        if (!empty($validated['transmission_id'])) {
+            $query->where('listings.transmission_id', $validated['transmission_id']);
+        }
+
+        if (!empty($validated['location_id'])) {
+            $query->where('listings.location_id', $validated['location_id']);
         }
 
         if (!empty($validated['price_from'])) {
@@ -184,10 +205,11 @@ class SearchController extends Controller
         // Order & paginate
         $query->orderBy('listings.created_at', 'DESC');
 
-        $listings = $query->paginate($validated['per_page'] ?? 20);
-
-        return ListingResource::collection($listings);
+        return ListingResource::collection(
+            $query->paginate($validated['per_page'] ?? 20)
+        );
     }
+
 
 
     /**
@@ -371,6 +393,32 @@ class SearchController extends Controller
             ->get();
 
         return response()->json($models);
+    }
+
+
+    /**
+     * @param $lang
+     * @param $categoryId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function makes($lang, $categoryId)
+    {
+        $makes = Make::query()
+            ->where('makes.category_id', $categoryId)
+            ->leftJoin('make_translations as make_trans', function ($join) use ($lang) {
+                $join->on('make_trans.make_id', '=', 'makes.id')
+                    ->leftJoin('languages as l_make', 'l_make.id', '=', 'make_trans.language_id')
+                    ->where('l_make.code', $lang);
+            })
+            ->select([
+                'makes.id',
+                'makes.category_id',
+                'make_trans.name',
+            ])
+            ->orderBy('make_trans.name', 'ASC')
+            ->get();
+
+        return response()->json($makes);
     }
 
 }

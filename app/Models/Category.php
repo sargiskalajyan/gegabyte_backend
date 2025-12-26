@@ -24,6 +24,17 @@ class Category extends Model
 
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function makes()
+    {
+        return $this->hasMany(Make::class);
+    }
+
+
+
+
+    /**
      * Translations relationship
      */
     public function translations()

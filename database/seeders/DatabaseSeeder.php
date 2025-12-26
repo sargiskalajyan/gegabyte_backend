@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             LanguageSeeder::class,
             LocationSeeder::class,
-            CategorySeeder::class,
+            VehicleCatalogSeeder::class,
             FuelSeeder::class,
             TransmissionSeeder::class,
             DrivetrainSeeder::class,
@@ -32,7 +32,6 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             DriverTypeSeeder::class,
             EngineSizeSeeder::class,
-            MakeModelSeeder::class,
             PackageSeeder::class,
             EngineSeeder::class,
 
