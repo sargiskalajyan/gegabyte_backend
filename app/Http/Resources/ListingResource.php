@@ -63,6 +63,7 @@ class ListingResource extends JsonResource
                 return new UserProfileResource($this->user);
             }),
 
+            'published_until' => $this->published_until,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];

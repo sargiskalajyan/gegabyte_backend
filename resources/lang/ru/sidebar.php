@@ -9,4 +9,5 @@ return [
     'notifications' => 'Уведомления',
     'account_pages' => 'Страницы аккаунта',
     'profile'       => 'Профиль',
+    'users'         => 'Пользователи',
 ];

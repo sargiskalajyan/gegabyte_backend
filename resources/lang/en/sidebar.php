@@ -9,4 +9,5 @@ return [
     'notifications' => 'Notifications',
     'account_pages' => 'Account pages',
     'profile'       => 'Profile',
+    'users'         => 'Users',
 ];

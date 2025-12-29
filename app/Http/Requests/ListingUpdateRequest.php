@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ListingUpdateRequest extends FormRequest
@@ -13,6 +14,7 @@ class ListingUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'category_id'     => 'nullable|exists:categories,id',
             'fuel_id'         => 'nullable|exists:fuels,id',
@@ -38,14 +40,22 @@ class ListingUpdateRequest extends FormRequest
             'year'       => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
             'mileage'    => 'nullable|integer|min:0',
             'price'      => 'nullable|numeric|min:0',
-            'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin,' . $this->route('listing'),
+            'vin' => [
+                'nullable',
+                'string',
+                'min:10',
+                'max:17',
+                Rule::unique('listings', 'vin')->ignore(
+                    $this->route('listing')->id ?? null
+                ),
+            ],
             'exchange'   => 'sometimes|in:0,1',
 
             'description'       => 'required|string|max:500',
 
             // Optional images, not required
             'images'   => 'nullable|array|max:10',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
         ];
     }
 

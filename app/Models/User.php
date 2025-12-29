@@ -104,7 +104,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     /**
      * @return \Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed
      */
-    public function activePackage(): UserPackage
+    public function activePackage2(): UserPackage
     {
         // Auto-expire old packages (NO CRON NEEDED)
         $this->userPackages()
@@ -137,6 +137,63 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 
         return $record;
     }
+
+
+    /**
+     * @return UserPackage
+     */
+    public function activePackage(): UserPackage
+    {
+        /**
+         * 1️⃣ Expire outdated packages
+         */
+        $this->userPackages()
+            ->where('status', 'active')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<', now())
+            ->update(['status' => 'expired']);
+
+        /**
+         * 2️⃣ Get latest valid active package
+         */
+        $record = $this->userPackages()
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->latest('starts_at')
+            ->first();
+
+        /**
+         * 3️⃣ If multiple active packages exist → expire older ones
+         */
+        if ($record) {
+            $this->userPackages()
+                ->where('status', 'active')
+                ->where('id', '!=', $record->id)
+                ->update(['status' => 'expired']);
+
+            return $record;
+        }
+
+        /**
+         * 4️⃣ Create FREE package safely (idempotent)
+         */
+        $freePackage = Package::where('price', 0)->firstOrFail();
+
+        return $this->userPackages()->firstOrCreate(
+            [
+                'package_id' => $freePackage->id,
+                'status'     => 'active',
+            ],
+            [
+                'starts_at'  => now(),
+                'expires_at'=> null,
+            ]
+        );
+    }
+
 
 
 

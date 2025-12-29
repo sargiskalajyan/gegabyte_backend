@@ -9,4 +9,5 @@ return [
     'notifications' => 'Ծանուցումներ',
     'account_pages' => 'Հաշվի էջեր',
     'profile'       => 'Պրոֆիլ',
+    'users'         => 'Օգտատերեր',
 ];

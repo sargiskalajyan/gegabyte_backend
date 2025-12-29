@@ -1,5 +1,4 @@
 <div class="container-fluid py-4">
-
     {{-- Toasts always top right --}}
     <div class="position-fixed top-1 end-1 z-index-2">
         @include('components.toast')
@@ -14,7 +13,7 @@
 
             {{-- ❗ TABLE RESPONSIVE FIX --}}
             <div class="table-responsive">
-                <table class="table mb-0">
+                <table class="table align-items-center mb-0 text-center">
                     <thead>
                     <tr>
                         <th>{{ __('listings.photos') }}</th>

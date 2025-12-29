@@ -158,6 +158,8 @@ class  ListingController extends Controller
                 'description' => $request->description,
                 'vin'         => $request->vin,
                 'exchange'    => $request->exchange ?? false,
+                'status'      => 'pending',
+                'published_until' => now()->addDays(30)->startOfDay(),
             ]);
 
             /**
@@ -209,6 +211,7 @@ class  ListingController extends Controller
     }
 
 
+
     /**
      * @param ListingUpdateRequest $request
      * @param $lang
@@ -218,6 +221,7 @@ class  ListingController extends Controller
      */
     public function update(ListingUpdateRequest $request, $lang, Listing $listing, ImageService $images)
     {
+
         $user = auth('api')->user();
 
         if ($listing->user_id !== $user->id) {

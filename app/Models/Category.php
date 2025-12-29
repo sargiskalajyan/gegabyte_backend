@@ -33,6 +33,7 @@ class Category extends Model
 
 
 
+
     /**
      * Translations relationship
      */
