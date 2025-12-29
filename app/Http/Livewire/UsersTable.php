@@ -18,8 +18,8 @@ class UsersTable extends Component
         $users = User::withCount([
             // Active listings: published & not expired
             'listings as active_listings_count' => function ($q) {
-                $q->where('status', 'published')
-                    ->where('published_until', '>=', now());
+                $q->where('status', 'published');
+//                    ->where('published_until', '>=', now());
             },
             // Total listings (all statuses)
             'listings as total_listings_count'
