@@ -10,4 +10,5 @@ return [
     'account_pages' => 'Account pages',
     'profile'       => 'Profile',
     'users'         => 'Users',
+    'translations'  => 'Translations',
 ];

@@ -229,7 +229,6 @@ class  ListingController extends Controller
         }
 
         $newFilesSaved = [];
-        $oldFilesDeleted = [];
 
         try {
             DB::beginTransaction();
@@ -246,18 +245,19 @@ class  ListingController extends Controller
 
             if ($request->hasFile('images')) {
 
-                // delete old DB photo records but keep paths in array
-                foreach ($listing->photos as $photo) {
+                $oldCount = $listing->photos()->count();
+                $newCount = count($request->file('images'));
 
-                    $oldFilesDeleted[] = $photo->url;
-                    $oldFilesDeleted[] = $photo->thumbnail;
-
-                    $photo->delete();
+                // Enforce max 10 images
+                if ($oldCount + $newCount > 10) {
+                    return response()->json([
+                        'message' => __('listings.max_images_exceeded'),
+                        'limit' => 10,
+                        'current' => $oldCount
+                    ], 403);
                 }
 
-                // add new images
                 foreach ($request->file('images') as $image) {
-
                     $result = $images->processImageDual($image);
 
                     $newFilesSaved[] = $result['large'];

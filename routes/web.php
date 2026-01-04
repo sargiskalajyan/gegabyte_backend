@@ -6,6 +6,7 @@ use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Auth\ResetPassword;
 use App\Http\Livewire\Billing;
 use App\Http\Livewire\ListingsTable;
+use App\Http\Livewire\TranslationsTable;
 use App\Http\Livewire\UsersTable;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Dashboard;
@@ -40,6 +41,10 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('listings', ListingsTable::class)->name('listings');
     Route::get('users', UsersTable::class)->name('users');
+
+    Route::get('translations', TranslationsTable::class)->name('translations');
+
+
     Route::get('billing', Billing::class)->name('billing');
     Route::get('profile', Profile::class)->name('profile');
     Route::get('tables', Tables::class)->name('tables');

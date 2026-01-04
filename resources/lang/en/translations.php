@@ -1,0 +1,69 @@
+<?php
+
+return [
+
+    'title'        => 'Translations',
+    'language'     => 'Language',
+    'actions'      => 'Actions',
+    'save'         => 'Save',
+    'edit'         => 'Edit',
+    'delete'       => 'Delete',
+    'add_new'      => 'Add New',
+    'cancel'       => 'Cancel',
+    'select_item'  => 'Select item',
+
+    'error_title'  => 'Error',
+    'validation' => [
+        'at_least_one' => 'At least one translation is required.',
+    ],
+
+    'saved_title'   => 'Saved',
+    'saved_message' => 'Translation saved successfully.',
+
+    'types' => [
+        'locations'       => 'Locations',
+        'categories'      => 'Categories',
+        'fuels'           => 'Fuels',
+        'transmissions'   => 'Transmissions',
+        'drivetrains'     => 'Drivetrains',
+        'conditions'      => 'Conditions',
+        'makes'           => 'Makes',
+        'car_models'      => 'Car Models',
+        'engines'         => 'Engines',
+        'colors'          => 'Colors',
+        'currencies'      => 'Currencies',
+        'engine_sizes'    => 'Engine Sizes',
+        'driver_types'    => 'Driver Types',
+        'gas_equipments'  => 'Gas Equipments',
+        'wheel_sizes'     => 'Wheel Sizes',
+        'headlights'      => 'Headlights',
+        'interior_colors' => 'Interior Colors',
+        'interior_materials' => 'Interior Materials',
+        'steering_wheels' => 'Steering Wheels',
+        'packages'        => 'Packages',
+    ],
+
+    'fields' => [
+        'name'                     => 'Name',
+        'description'              => 'Description',
+        'slug'                     => 'Slug',
+        'title'                    => 'Title',
+        'parent_id'                => 'Parent',
+        'image_url'                => 'Image URL',
+        'code'                     => 'Code',
+        'category_id'              => 'Category',
+        'make_id'                  => 'Make',
+        'value'                    => 'Value',
+        'key'                      => 'Key',
+        'price'                    => 'Price',
+        'duration_days'            => 'Duration (days)',
+        'max_active_listings'      => 'Max Active Listings',
+        'included_featured_days'   => 'Included Featured Days',
+        'is_active'                => 'Active',
+    ],
+    'confirm_delete_title' => 'Are you sure?',
+    'confirm_delete_text'  => 'This action cannot be undone!',
+    'confirm_delete_yes'   => 'Yes, delete',
+    'confirm_delete_cancel'=> 'Cancel',
+
+];

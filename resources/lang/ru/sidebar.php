@@ -10,4 +10,5 @@ return [
     'account_pages' => 'Страницы аккаунта',
     'profile'       => 'Профиль',
     'users'         => 'Пользователи',
+    'translations'  => 'Переводы',
 ];

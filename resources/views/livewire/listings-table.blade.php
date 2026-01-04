@@ -11,7 +11,6 @@
 
         <div class="card-body px-0">
 
-            {{-- ❗ TABLE RESPONSIVE FIX --}}
             <div class="table-responsive">
                 <table class="table align-items-center mb-0 text-center">
                     <thead>

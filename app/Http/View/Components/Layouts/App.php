@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components\Layouts;
+namespace App\Http\View\Components\Layouts;
 
 use Illuminate\View\Component;
 

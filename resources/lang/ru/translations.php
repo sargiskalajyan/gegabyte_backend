@@ -1,0 +1,69 @@
+<?php
+
+return [
+
+    'title'        => 'Переводы',
+    'language'     => 'Язык',
+    'actions'      => 'Действия',
+    'save'         => 'Сохранить',
+    'edit'         => 'Редактировать',
+    'delete'       => 'Удалить',
+    'add_new'      => 'Добавить новый',
+    'cancel'       => 'Отмена',
+    'select_item'  => 'Выберите элемент',
+
+    'error_title'  => 'Ошибка',
+    'validation' => [
+        'at_least_one' => 'Требуется как минимум один перевод.',
+    ],
+
+    'saved_title'   => 'Сохранено',
+    'saved_message' => 'Перевод успешно сохранен.',
+
+    'types' => [
+        'locations'       => 'Локации',
+        'categories'      => 'Категории',
+        'fuels'           => 'Топливо',
+        'transmissions'   => 'Трансмиссии',
+        'drivetrains'     => 'Приводы',
+        'conditions'      => 'Состояния',
+        'makes'           => 'Производители',
+        'car_models'      => 'Модели авто',
+        'engines'         => 'Двигатели',
+        'colors'          => 'Цвета',
+        'currencies'      => 'Валюты',
+        'engine_sizes'    => 'Объемы двигателей',
+        'driver_types'    => 'Типы водителей',
+        'gas_equipments'  => 'Газовое оборудование',
+        'wheel_sizes'     => 'Размеры колес',
+        'headlights'      => 'Фары',
+        'interior_colors' => 'Цвета интерьера',
+        'interior_materials' => 'Материалы интерьера',
+        'steering_wheels' => 'Рулевые колеса',
+        'packages'        => 'Пакеты',
+    ],
+
+    'fields' => [
+        'name'                     => 'Название',
+        'description'              => 'Описание',
+        'slug'                     => 'Слаг',
+        'title'                    => 'Заголовок',
+        'parent_id'                => 'Родитель',
+        'image_url'                => 'Изображение',
+        'code'                     => 'Код',
+        'category_id'              => 'Категория',
+        'make_id'                  => 'Производитель',
+        'value'                    => 'Значение',
+        'key'                      => 'Ключ',
+        'price'                    => 'Цена',
+        'duration_days'            => 'Длительность (дней)',
+        'max_active_listings'      => 'Макс. активные объявления',
+        'included_featured_days'   => 'Включенные выделенные дни',
+        'is_active'                => 'Активен',
+    ],
+    'confirm_delete_title' => 'Вы уверены?',
+    'confirm_delete_text'  => 'Это действие нельзя отменить!',
+    'confirm_delete_yes'   => 'Да, удалить',
+    'confirm_delete_cancel'=> 'Отмена',
+
+];

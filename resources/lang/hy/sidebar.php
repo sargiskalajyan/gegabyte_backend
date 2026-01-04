@@ -10,4 +10,5 @@ return [
     'account_pages' => 'Հաշվի էջեր',
     'profile'       => 'Պրոֆիլ',
     'users'         => 'Օգտատերեր',
+    'translations'  => 'Թարգմանություններ',
 ];

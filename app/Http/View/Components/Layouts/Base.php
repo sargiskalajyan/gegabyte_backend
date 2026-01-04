@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\View\Components;
-
+namespace App\Http\View\Components\Layouts;
 use Illuminate\View\Component;
 
 class Base extends Component
