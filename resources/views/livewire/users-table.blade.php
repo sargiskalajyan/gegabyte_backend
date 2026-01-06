@@ -22,6 +22,7 @@
                         <th>{{ __('users.phone') }}</th>
                         <th>{{ __('users.active_listings') }}</th>
                         <th>{{ __('users.total_listings') }}</th>
+                        <th>{{ __('users.actions') }}</th>
                     </tr>
                     </thead>
 
@@ -37,6 +38,15 @@
                             </td>
                             <td>
                                 <span class="badge bg-gradient-secondary">{{ $user->total_listings_count  }}</span>
+                            </td>
+                            <td>
+                                <a
+                                    href="{{ route('users.impersonate', $user->id) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    target="_blank"
+                                >
+                                    {{ __('users.login_as') }}
+                                </a>
                             </td>
                         </tr>
                     @empty

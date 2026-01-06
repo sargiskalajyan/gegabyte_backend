@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('listing_id')->constrained()->cascadeOnDelete();
             $table->string('url');
+            $table->boolean('is_default')->default(false);
             $table->string('thumbnail')->nullable();
             $table->timestamps();
         });

@@ -44,4 +44,11 @@ return [
 
     'deleted_title'   => 'Удалено',
     'deleted_message' => 'Фотография была удалена.',
+
+    'default' => 'Основное',
+    'make_default' => 'Сделать основным',
+
+    'default_photo_title' => 'Основное фото обновлено',
+    'default_photo_message' => 'Это изображение теперь является основным.',
+
 ];

@@ -11,4 +11,5 @@ return [
     'profile'       => 'Профиль',
     'users'         => 'Пользователи',
     'translations'  => 'Переводы',
+    'orders'        => 'Заказы',
 ];

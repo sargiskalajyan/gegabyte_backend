@@ -95,7 +95,6 @@
                 </div>
 
                 <div class="modal-body">
-
                     <div id="galleryCarousel" class="carousel slide">
                         <div class="carousel-inner">
                             @foreach ($galleryPhotos as $i => $photo)
@@ -107,11 +106,23 @@
                                              wire:click="openZoom('{{ $photo['url'] }}')">
                                     </div>
 
-                                    <div class="text-center mt-2">
-                                        <button class="btn btn-danger"
+                                    <div class="text-center mt-2 d-flex justify-content-center gap-2">
+                                        <button class="btn btn-danger btn-sm"
                                                 wire:click="deletePhoto({{ $photo['id'] }})">
                                             {{ __('listings.delete') }}
                                         </button>
+
+
+                                        @if($photo['is_default'])
+                                                <button class="btn btn-warning btn-sm" disabled>
+                                                    {{ __('listings.default') }}
+                                                </button>
+                                        @else
+                                            <button class="btn btn-success btn-sm"
+                                                    wire:click="setDefaultPhoto({{ $photo['id'] }})">
+                                                {{ __('listings.make_default') }}
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach

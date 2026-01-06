@@ -28,4 +28,5 @@ return [
     'too_many_attempts' => 'Too many attempts. Please try again in :minutes minute(s).',
     'code_not_verified' => 'The verification code has not been confirmed.',
     'code_verified' => 'The verification code has been successfully confirmed.',
+    'token_not_provided' => 'Authentication token not provided.',
 ];

@@ -11,4 +11,5 @@ return [
     'profile'       => 'Profile',
     'users'         => 'Users',
     'translations'  => 'Translations',
+    'orders'        => 'Orders',
 ];

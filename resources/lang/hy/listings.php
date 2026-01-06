@@ -44,4 +44,11 @@ return [
 
     'deleted_title'   => 'Ջնջված է',
     'deleted_message' => 'Լուսանկարը հեռացվել է։',
+
+    'default' => 'Հիմնական',
+    'make_default' => 'Դարձնել հիմնական',
+
+    'default_photo_title' => 'Հիմնական լուսանկարը թարմացվեց',
+    'default_photo_message' => 'Այս լուսանկարը այժմ հիմնականն է։',
+
 ];

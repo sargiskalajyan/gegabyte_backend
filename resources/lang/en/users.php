@@ -9,4 +9,6 @@ return [
     'create_button' => 'Add User',
     'no_users' => 'No users found.',
     'total_listings' => 'Total Listings',
+    'actions' => 'Actions',
+    'login_as' => 'Login as user',
 ];

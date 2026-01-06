@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Livewire\Auth\ForgotPassword;
 use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Auth\Register;
 use App\Http\Livewire\Auth\ResetPassword;
 use App\Http\Livewire\Billing;
 use App\Http\Livewire\ListingsTable;
+use App\Http\Livewire\OrdersTable;
 use App\Http\Livewire\TranslationsTable;
 use App\Http\Livewire\UsersTable;
 use Illuminate\Support\Facades\Route;
@@ -41,8 +43,9 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('listings', ListingsTable::class)->name('listings');
     Route::get('users', UsersTable::class)->name('users');
-
+    Route::get('users/{user}/impersonate', [ImpersonateController::class, 'login'])->name('users.impersonate');
     Route::get('translations', TranslationsTable::class)->name('translations');
+    Route::get('orders', OrdersTable::class)->name('orders');
 
 
     Route::get('billing', Billing::class)->name('billing');

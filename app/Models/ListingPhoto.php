@@ -12,7 +12,7 @@ class ListingPhoto extends Model
     /**
      * @var string[]
      */
-    protected $fillable = ['listing_id', 'url', 'thumbnail'];
+    protected $fillable = ['listing_id', 'url',  'is_default', 'thumbnail'];
 
 
     /**

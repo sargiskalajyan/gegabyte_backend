@@ -44,4 +44,10 @@ return [
 
     'deleted_title'   => 'Deleted',
     'deleted_message' => 'Photo removed.',
+
+    'default' => 'Default',
+    'make_default' => 'Set as default',
+
+    'default_photo_title' => 'Default photo updated',
+    'default_photo_message' => 'This photo is now the main listing image.',
 ];
