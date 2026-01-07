@@ -50,4 +50,7 @@ return [
 
     'default_photo_title' => 'Default photo updated',
     'default_photo_message' => 'This photo is now the main listing image.',
+    'invalid_status_transition' => 'Invalid status transition from :from to :to.',
+    'package_limit_reached' => 'You cannot activate more listings. Please upgrade your package.',
+    'status_updated' => 'Listing status has been updated successfully.',
 ];

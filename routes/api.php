@@ -49,7 +49,7 @@ Route::group([
         Route::get('/', [SearchController::class, 'index']);
         Route::get('/list',  [SearchController::class, 'list']);
         Route::get('/listings',  [SearchController::class, 'listings']);
-        Route::get('/models/{id}',  [SearchController::class, 'models']);
+        Route::get('/models',  [SearchController::class, 'models']);
         Route::get('/makes/{id}',  [SearchController::class, 'makes']);
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });
@@ -74,8 +74,10 @@ Route::group([
             Route::get('/{listing}', [ListingController::class, 'show']);
             Route::post('/', [ListingController::class, 'store']);
             Route::post('/{listing}', [ListingController::class, 'update']);
+            Route::post('/{listing}/status', [ListingController::class, 'changeStatus']);
             Route::delete('/{listing}', [ListingController::class, 'destroy']);
             Route::delete('/{listing}/photos/{photo}', [ListingController::class, 'deletePhoto']);
+
         });
 
         Route::post('packages/{package}/buy', [PackageController::class, 'buy']);

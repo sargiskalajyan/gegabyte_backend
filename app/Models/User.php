@@ -142,7 +142,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     /**
      * @return UserPackage
      */
-    public function activePackage(): UserPackage
+    public function activePackage3(): UserPackage
     {
         /**
          * 1️⃣ Expire outdated packages
@@ -194,6 +194,60 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         );
     }
 
+
+    /**
+     * @return UserPackage
+     */
+    public function activePackage(): UserPackage
+    {
+        // 1️⃣ Expire outdated paid packages
+        $this->userPackages()
+            ->where('status', 'active')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<', now())
+            ->update(['status' => 'expired']);
+
+        // 2️⃣ Get active paid package
+        $record = $this->userPackages()
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->latest('starts_at')
+            ->first();
+
+        if ($record) {
+            return $record;
+        }
+
+        // 3️⃣ RETURN VIRTUAL FREE PACKAGE (NOT SAVED)
+        $free = Package::where('price', 0)->firstOrFail();
+
+        return new UserPackage([
+            'package_id' => $free->id,
+            'status'     => 'active',
+            'starts_at'  => now(),
+            'expires_at'=> null,
+            'package'    => $free,
+        ]);
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function canActivateListing(): bool
+    {
+        $package = $this->activePackage();
+        $max = $package->package->max_active_listings ?? 0;
+
+        $activeCount = $this->listings()
+            ->whereIn('status', ['pending', 'published'])
+            ->count();
+
+        return $activeCount < $max;
+    }
 
 
 

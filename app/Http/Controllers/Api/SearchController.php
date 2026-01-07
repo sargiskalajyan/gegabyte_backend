@@ -372,16 +372,16 @@ class SearchController extends Controller
     /**
      * @param Request $request
      * @param $lang
-     * @param $makeId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function models($lang, $makeId)
+    public function models(Request $request, $lang)
     {
+        $makeIds = $request->input('make_ids', []);
         $models = CarModel::query()
-            ->where('make_id', $makeId)
-            ->leftJoin('car_model_translations AS model_trans', function ($join) use ($lang) {
+            ->whereIn('make_id', $makeIds)
+            ->leftJoin('car_model_translations as model_trans', function ($join) use ($lang) {
                 $join->on('model_trans.car_model_id', '=', 'car_models.id')
-                    ->leftJoin('languages AS l_model', 'l_model.id', '=', 'model_trans.language_id')
+                    ->leftJoin('languages as l_model', 'l_model.id', '=', 'model_trans.language_id')
                     ->where('l_model.code', $lang);
             })
             ->select([

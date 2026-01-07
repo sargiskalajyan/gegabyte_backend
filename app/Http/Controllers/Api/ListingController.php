@@ -228,7 +228,15 @@ class  ListingController extends Controller
             return response()->json(['message' => __('listings.forbidden')], 403);
         }
 
+
+        if ($listing->status === 'pending') {
+            return response()->json([
+                'message' => __('listings.cannot_edit_listing')
+            ], 403);
+        }
+
         $newFilesSaved = [];
+        $imageChanged = false;
 
         try {
             DB::beginTransaction();
@@ -243,7 +251,12 @@ class  ListingController extends Controller
             // Update fields
             $listing->update($request->validated());
 
+
+            /**
+             * 🖼 IMAGE UPLOAD
+             */
             if ($request->hasFile('images')) {
+                $imageChanged = true;
 
                 $oldCount = $listing->photos()->count();
                 $newCount = count($request->file('images'));
@@ -270,6 +283,10 @@ class  ListingController extends Controller
                 }
             }
 
+            if ($listing->status === 'published' && $imageChanged) {
+                $listing->status = 'pending';
+            }
+
             DB::commit();
 
         } catch (\Exception $e) {
@@ -289,12 +306,6 @@ class  ListingController extends Controller
             ], 500);
         }
 
-        // Only after successful commit: delete old physical files
-        foreach ($oldFilesDeleted as $path) {
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-        }
 
         $listing->load(['photos', 'user', 'location', 'category']);
         $listing->loadTranslationAttributes();
@@ -304,6 +315,70 @@ class  ListingController extends Controller
             'listing' => new ListingResource($listing),
         ]);
     }
+
+
+    /**
+     * @param Request $request
+     * @param $lang
+     * @param Listing $listing
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeStatus(Request $request, $lang, Listing $listing)
+    {
+        // Set locale dynamically
+        app()->setLocale($lang);
+
+        $user = auth('api')->user();
+
+        if ($listing->user_id !== $user->id) {
+            return response()->json([
+                'message' => __('listings.forbidden')
+            ], 403);
+        }
+
+        $validStatuses = array_keys(__('listings.statuses', [], $lang));
+
+        $request->validate([
+            'status' => 'required|in:' . implode(',', $validStatuses)
+        ]);
+
+        $to = $request->status;
+
+        $allowed = [
+            'draft'     => ['pending'],
+            'rejected'  => ['pending'],
+            'expired'   => ['pending'],
+            'published' => ['draft'],
+        ];
+
+        if (! isset($allowed[$listing->status]) || ! in_array($to, $allowed[$listing->status])) {
+            return response()->json([
+                'message' => __('listings.invalid_status_transition', [
+                    'from' => __('listings.statuses.' . $listing->status),
+                    'to' => __('listings.statuses.' . $to)
+                ]),
+                'from' => $listing->status,
+                'to'   => $to,
+            ], 422);
+        }
+
+        if (in_array($listing->status, ['expired', 'rejected']) && ! $user->canActivateListing()) {
+            return response()->json([
+                'message' => __('listings.package_limit_reached')
+            ], 403);
+        }
+
+        $listing->status = $to;
+        $listing->save();
+
+        return response()->json([
+            'message' => __('listings.status_updated'),
+            'status'  => $listing->status,
+        ]);
+    }
+
+
+
 
 
     /**
@@ -359,8 +434,8 @@ class  ListingController extends Controller
     }
 
 
-
     /**
+     * @param $lang
      * @param Listing $listing
      * @param ListingPhoto $photo
      * @param ImageService $images
@@ -370,7 +445,6 @@ class  ListingController extends Controller
     {
         $user = auth('api')->user();
 
-
         if ($listing->user_id !== $user->id) {
             return response()->json(['message' => __('listings.forbidden')], 403);
         }
@@ -379,10 +453,19 @@ class  ListingController extends Controller
             return response()->json(['message' => __('listings.photo_not_owned')], 422);
         }
 
+        $wasDefault = $photo->is_default;
+
         $images->deleteImage($photo->url);
         $images->deleteImage($photo->thumbnail);
-
         $photo->delete();
+
+        /**
+         * 🔁 published → pending if image affected
+         */
+        if ($listing->status === 'published' && $wasDefault) {
+            $listing->status = 'pending';
+            $listing->save();
+        }
 
         return response()->json([
             'message' => __('listings.photo_deleted'),

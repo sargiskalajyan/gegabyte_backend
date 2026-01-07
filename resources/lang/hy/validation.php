@@ -20,9 +20,11 @@ return [
         'string'  => ':attribute դաշտը չի կարող կազմված լինել :max-ից ավելի նիշերից։',
         'array'   => ':attribute դաշտը չի կարող ունենալ :max-ից ավելի տարրեր։',
     ],
-    'exists'    => 'Ընտրված :attribute արժեքը սխալ է։',
+    'exists'   => 'Ընտրված :attribute արժեքը սխալ է։',
     'image'    => ':attribute դաշտը պետք է լինի նկար։',
     'mimes'    => ':attribute դաշտը պետք է լինի հետևյալ ձևաչափերից մեկը՝ :values։',
+    'accepted' => ':attribute պետք է ընդունվի։',
+    'in'       => 'Ընտրված :attribute-ն անվավեր է։',
 
     'attributes' => [
         'username' => 'օգտանուն',
@@ -52,6 +54,7 @@ return [
         'images.*'        => 'Նկար',
         'old_password'    => 'նախորդ գաղտնաբառ',
         'profile_image'   => 'պրոֆիլի նկար',
+        'status'          => 'կարգավիճակ',
     ],
     'more_errors' => '(և :count այլ սխալներ)',
     'password_regex' => 'Գաղտնաբառը պետք է պարունակի մեծատառ, փոքրատառ, թիվ և հատուկ նշան։',

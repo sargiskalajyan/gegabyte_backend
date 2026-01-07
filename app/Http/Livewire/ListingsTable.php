@@ -14,7 +14,7 @@ class ListingsTable extends Component
 
     protected string $paginationTheme = 'bootstrap';
 
-    public $statusOptions = ['draft','pending','published','rejected','expired'];
+    public $statusOptions = ['draft', 'published', 'rejected'];
 
     public $galleryPhotos = [];
     public $galleryListingId = null;
@@ -99,7 +99,22 @@ class ListingsTable extends Component
             return;
         }
 
-        $listing->update(['status' => $newStatus]);
+        if (!in_array($newStatus, $this->statusOptions))  {
+            return;
+        }
+
+        $listing->status = $newStatus;
+
+        if ($newStatus === 'published') {
+            $listing->published_until = now()->addDays(30)->startOfDay();
+        }
+
+
+        if ($newStatus === 'pending' || $newStatus === 'draft') {
+            $listing->published_until = null;
+        }
+
+        $listing->save();
 
         $image = $listing->photos->first()->thumbnail
             ?? $listing->photos->first()->url

@@ -7,7 +7,8 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\Encoders\PngEncoder;;
+
 
 class ImageService
 {
@@ -89,7 +90,7 @@ class ImageService
      * @param string $method
      * @return string[]
      */
-    public function processImageDual($imageFile, string $method = 'scaleDown'): array
+    public function processImageDualOld($imageFile, string $method = 'scaleDown'): array
     {
         // ------------------------------
         // Large image (1600px max width)
@@ -129,6 +130,104 @@ class ImageService
             'large' => $largeName,
             'small' => $smallName,
         ];
+    }
+
+
+    public function processImageDual($imageFile, string $method = 'scaleDown'): array
+    {
+        $ratio = 4 / 3; // 4:3 aspect ratio
+
+        // ------------------------------
+        // Large image
+        // ------------------------------
+        $largeImg = $this->manager->read($imageFile);
+
+        // Crop to 4:3 ratio
+        if (intval($largeImg->width() / $ratio) > $largeImg->height()) {
+            $largeImg->cover(intval($largeImg->height() * $ratio), $largeImg->height());
+        } else {
+            $largeImg->cover($largeImg->width(), intval($largeImg->width() / $ratio));
+        }
+
+        // Scale down if too large
+        $largeImg->scaleDown(1280, 1280);
+
+        $largeName = 'listings/' . uniqid('lg_') . '.webp';
+        Storage::disk('public')->put($largeName, $largeImg->encode(new WebpEncoder(quality: 90)));
+
+        // ------------------------------
+        // Small image
+        // ------------------------------
+        $smallImg = $this->manager->read($imageFile);
+
+        if (intval($smallImg->width() / $ratio) > $smallImg->height()) {
+            $smallImg->cover(intval($smallImg->height() * $ratio), $smallImg->height());
+        } else {
+            $smallImg->cover($smallImg->width(), intval($smallImg->width() / $ratio));
+        }
+
+        switch ($method) {
+            case 'cover':
+                $smallImg->cover(400, 400);
+                break;
+            case 'scaleDown':
+            default:
+                $smallImg->scaleDown(400, 400);
+                break;
+        }
+
+        $smallName = 'listings/' . uniqid('sm_') . '.webp';
+        Storage::disk('public')->put($smallName, $smallImg->encode(new WebpEncoder(quality: 70)));
+
+        return [
+            'large' => $largeName,
+            'small' => $smallName,
+        ];
+    }
+
+
+    /**
+     * @param $imageFile
+     * @param string $method
+     * @return string[]
+     */
+    public function processImageDual2($imageFile, string $method = 'scaleDown'): array
+    {
+        return [
+            'large' => $this->makeVariant($imageFile, 1280, 960, 90, $method),
+            'small' => $this->makeVariant($imageFile, 400, 300, 70, $method),
+        ];
+    }
+
+
+    /**
+     * @param $imageFile
+     * @param int $w
+     * @param int $h
+     * @param int $quality
+     * @param string $method
+     * @return string
+     */
+    protected function makeVariant($imageFile, int $w, int $h, int $quality, string $method = 'scaleDown'): string
+    {
+        $image = $this->manager->read($imageFile)->orient();
+
+        $ratio = $image->width() / $image->height();
+        $targetRatio = $w / $h;
+
+        if ($method === 'cover' || abs($ratio - $targetRatio) < 0.25) {
+            // Crop to exact 4:3 if close or method=cover
+            $image->cover($w, $h);
+        } else {
+            // Resize proportionally + pad to maintain 4:3
+            $image->resize($w, $h, fn($c) => $c->aspectRatio());
+            $image->pad($w, $h, '#f3f3f3', 'center');
+        }
+
+        $path = 'listings/' . uniqid('img_') . '.webp';
+        Storage::disk('public')->put($path, $image->encode(new WebpEncoder(quality: $quality)));
+
+        return $path;
     }
 
 

@@ -23,6 +23,8 @@ return [
     'exists'    => 'The selected :attribute is invalid.',
     'image'    => 'The :attribute must be an image.',
     'mimes'    => 'The :attribute must be a file of type: :values.',
+    'accepted' => 'The :attribute must be accepted.',
+    'in' => 'The selected :attribute is invalid.',
 
     'attributes' => [
         'username' => 'username',
@@ -52,6 +54,7 @@ return [
         'images.*'        => 'image',
         'old_password'    => 'current password',
         'profile_image'   => 'profile image',
+        'status'          => 'status',
 
     ],
     'more_errors' => 'and :count more errors',
