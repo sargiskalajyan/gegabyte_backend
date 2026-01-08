@@ -1,10 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ImpersonateController;
-use App\Http\Livewire\Auth\ForgotPassword;
 use App\Http\Livewire\Auth\Login;
-use App\Http\Livewire\Auth\Register;
-use App\Http\Livewire\Auth\ResetPassword;
 use App\Http\Livewire\Billing;
 use App\Http\Livewire\ListingsTable;
 use App\Http\Livewire\OrdersTable;
@@ -12,16 +9,10 @@ use App\Http\Livewire\TranslationsTable;
 use App\Http\Livewire\UsersTable;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Dashboard;
-use App\Http\Livewire\ExampleLaravel\UserManagement;
-use App\Http\Livewire\ExampleLaravel\UserProfile;
 use App\Http\Livewire\Notifications;
 use App\Http\Livewire\Profile;
-use App\Http\Livewire\RTL;
-use App\Http\Livewire\StaticSignIn;
-use App\Http\Livewire\StaticSignUp;
 use App\Http\Livewire\Tables;
-use App\Http\Livewire\VirtualReality;
-use GuzzleHttp\Middleware;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -34,9 +25,11 @@ use GuzzleHttp\Middleware;
 |
 */
 
+
 Route::get('/', function(){
     return redirect('sign-in');
 });
+
 
 Route::get('sign-in', Login::class)->middleware('guest')->name('login');
 Route::group(['middleware' => 'admin'], function () {

@@ -174,7 +174,7 @@ return [
         'translation_table' => 'package_translations',
         'foreign_key'       => 'package_id',
         'fields'            => ['name', 'description'],
-        'base_fields'       => ['key', 'price', 'duration_days', 'max_active_listings',  'included_featured_days',  'is_active'],
+        'base_fields'       => ['key', 'price', 'duration_days', 'max_active_listings',  'included_featured_days', 'top_listings_count',  'is_active'],
     ],
 
 ];

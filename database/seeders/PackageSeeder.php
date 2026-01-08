@@ -19,6 +19,7 @@ class PackageSeeder extends Seeder
                 'duration_days' => null,
                 'max_active_listings' => 3,
                 'included_featured_days' => 0,
+                'top_listings_count' => 0,
                 'names' => [
                     'hy' => 'Անվճար փաթեթ',
                     'en' => 'Free Package',
@@ -31,6 +32,7 @@ class PackageSeeder extends Seeder
                 'duration_days' => 30,
                 'max_active_listings' => 6,
                 'included_featured_days' => 7,
+                'top_listings_count' => 1,
                 'names' => [
                     'hy' => 'Սթանդարտ փաթեթ',
                     'en' => 'Standard Package',
@@ -43,6 +45,7 @@ class PackageSeeder extends Seeder
                 'duration_days' => 30,
                 'max_active_listings' => 25,
                 'included_featured_days' => 7,
+                'top_listings_count' => 3,
                 'names' => [
                     'hy' => 'Պրեմիում փաթեթ',
                     'en' => 'Premium Package',
@@ -61,6 +64,7 @@ class PackageSeeder extends Seeder
                     'duration_days' => $item['duration_days'],
                     'max_active_listings' => $item['max_active_listings'],
                     'included_featured_days' => $item['included_featured_days'],
+                    'top_listings_count' => $item['top_listings_count'],
                 ]
             );
 

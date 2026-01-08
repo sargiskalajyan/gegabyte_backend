@@ -16,7 +16,9 @@ class Package extends Model
         'duration_days',
         'max_active_listings',
         'included_featured_days',
-        'is_active'
+        'top_listings_count',
+        'is_active',
+
     ];
 
     /**

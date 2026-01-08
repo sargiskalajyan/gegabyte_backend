@@ -31,6 +31,10 @@ return new class extends Migration
                 ->default(0)
                 ->comment('How many days user can feature listings for free');
 
+            $table->unsignedSmallInteger('top_listings_count')
+                ->default(0)
+                ->comment('Maximum top active listings allowed under this package');
+
             $table->boolean('is_active')
                 ->default(true)
                 ->comment('Whether the package is available to users');

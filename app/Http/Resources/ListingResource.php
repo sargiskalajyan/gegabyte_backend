@@ -64,6 +64,7 @@ class ListingResource extends JsonResource
             }),
 
             'published_until' => $this->published_until,
+            'status' => $this->status,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
