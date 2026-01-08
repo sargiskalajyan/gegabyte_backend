@@ -139,7 +139,15 @@ class UserController extends Controller
             ->where('listings.user_id', $userId)
             ->where('listings.status', 'published')
 
-            ->with(['photos', 'user'])
+            ->with([
+                'photos',
+                'user' => function ($q) {
+                    $q->withCount([
+                        'listings as listings_count' => fn ($q) =>
+                        $q->where('status', 'published')
+                    ]);
+                }
+            ])
             ->orderByDesc('listings.created_at');
 
         return ListingResource::collection(

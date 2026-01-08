@@ -44,6 +44,7 @@ class ListingResource extends JsonResource
             'interior_color'     => $this->relationData($this->interior_color_id, $this->interior_color_name),
             'interior_material'  => $this->relationData($this->interior_material_id, $this->interior_material_name),
             'steering_wheel'     => $this->relationData($this->steering_wheel_id, $this->steering_wheel_name),
+            'currency'           => $this->relationData($this->currency_id, $this->currency_name),
 
             // PHOTOS
             'photos' => $this->photos->map(fn ($photo) => [
@@ -52,12 +53,6 @@ class ListingResource extends JsonResource
                 'thumbnail' => $photo->thumbnail,
             ]),
 
-            // USER
-//            'user' => $this->user ? [
-//                'id'           => $this->user->id,
-//                'username'     => $this->user->username,
-//                'phone_number' => $this->user->phone_number,
-//            ] : null,
 
             'user' => $this->whenLoaded('user', function () {
                 return new UserProfileResource($this->user);

@@ -25,6 +25,7 @@ class UserResource extends JsonResource
                 ? asset('storage/' . $this->profile_image)
                 : null,
 
+            'listings_count' => $this->whenCounted('listings'),
             'active_package' => $this->when(
                 $this->relationLoaded('userPackages') || true,
                 fn () => new UserPackageResource($this->activePackage())

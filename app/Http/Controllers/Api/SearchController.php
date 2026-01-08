@@ -138,7 +138,15 @@ class SearchController extends Controller
                     ->where('l_loc.code', $lang);
             })
 
-            ->with(['photos', 'user'])
+            ->with([
+                'photos',
+                'user' => function ($q) {
+                    $q->withCount([
+                        'listings as listings_count' => fn ($q) =>
+                        $q->where('status', 'published')
+                    ]);
+                }
+            ])
             ->where('listings.status', 'published');
 
         // ------------------ APPLY FILTERS ------------------
@@ -220,7 +228,15 @@ class SearchController extends Controller
      */
     public function show(Request $request, $lang, $listingId)
     {
-        $listing = Listing::with(['photos', 'user'])
+        $listing = Listing::with([
+            'photos',
+            'user' => function ($q) {
+                $q->withCount([
+                    'listings as listings_count' => fn ($q) =>
+                    $q->where('status', 'published')
+                ]);
+            }
+            ])
             ->where('id', $listingId)
             ->where('status', '=','published')
             ->first();
@@ -360,7 +376,15 @@ class SearchController extends Controller
             // ------------------ CONDITIONS ------------------
             ->where('listings.status', 'published')
 
-            ->with(['photos', 'user'])
+            ->with([
+                'photos',
+                'user' => function ($q) {
+                    $q->withCount([
+                        'listings as listings_count' => fn ($q) =>
+                        $q->where('status', 'published')
+                    ]);
+                }
+            ])
             ->orderByDesc('listings.created_at');
 
         return ListingResource::collection(

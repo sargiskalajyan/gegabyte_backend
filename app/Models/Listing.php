@@ -36,6 +36,8 @@ class Listing extends Model
         'steering_wheel_name',
         'engine_name',
         'engine_size_name',
+        'currency_name',
+        'currency_code',
     ];
 
     /* ----------------------- RELATIONS ----------------------- */
@@ -143,6 +145,11 @@ class Listing extends Model
         return $this->belongsTo(SteeringWheel::class);
     }
 
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
 
     /* ------------------ ACCESSORS (JOIN aware) ------------------ */
 
@@ -151,6 +158,23 @@ class Listing extends Model
         if ($joinValue) return $joinValue;
         return $this->$relation?->translation?->$attr;
     }
+
+    public function getCurrencyNameAttribute()
+    {
+        return $this->joinOrRelation(
+            $this->attributes['currency_name'] ?? null,
+            'currency',
+            'name'
+        );
+    }
+
+    public function getCurrencyCodeAttribute()
+    {
+        // code comes from currencies table directly (not translated)
+        return $this->attributes['currency_code']
+            ?? $this->currency?->code;
+    }
+
 
     public function getMakeNameAttribute()
     {
@@ -346,6 +370,11 @@ class Listing extends Model
             ->leftJoin('steering_wheel_translations AS steer_w_trans', 'steer_w_trans.steering_wheel_id', '=', 'listings.steering_wheel_id')
             ->leftJoin('languages AS lsteer_w', 'lsteer_w.id', '=', 'steer_w_trans.language_id')
             ->where('lsteer_w.code', $lang)
+            // CURRENCY
+            ->leftJoin('currencies AS curr', 'curr.id', '=', 'listings.currency_id')
+            ->leftJoin('currency_translations AS currency_trans', 'currency_trans.currency_id', '=', 'curr.id')
+            ->leftJoin('languages AS lcurrency', 'lcurrency.id', '=', 'currency_trans.language_id')
+            ->where('lcurrency.code', $lang)
             // ENGINE
             ->leftJoin(
                 'engine_translations AS engine_trans',
