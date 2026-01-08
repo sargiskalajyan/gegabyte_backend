@@ -90,7 +90,7 @@ class ImageService
      * @param string $method
      * @return string[]
      */
-    public function processImageDualOld($imageFile, string $method = 'scaleDown'): array
+    public function processImageDual($imageFile, string $method = 'scaleDown'): array
     {
         // ------------------------------
         // Large image (1600px max width)
@@ -133,7 +133,7 @@ class ImageService
     }
 
 
-    public function processImageDual($imageFile, string $method = 'scaleDown'): array
+    public function processImageDualOld($imageFile, string $method = 'scaleDown'): array
     {
         $ratio = 4 / 3; // 4:3 aspect ratio
 
