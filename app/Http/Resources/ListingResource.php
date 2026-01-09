@@ -59,6 +59,7 @@ class ListingResource extends JsonResource
             }),
 
             'published_until' => $this->published_until,
+            'views' => (int)$this->views,
             'is_top' => (bool)$this->is_top,
             'top_expires_at' => $this->top_expires_at,
             'status' => $this->status,

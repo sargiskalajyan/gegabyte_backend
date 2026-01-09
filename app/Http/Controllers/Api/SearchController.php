@@ -245,6 +245,13 @@ class SearchController extends Controller
             return response()->json(['message' => __('listings.not_found')], 404);
         }
 
+        // Count view for non-owner (works for guests too).
+        $viewer = auth('api')->user();
+        if (! $viewer || (int)$viewer->id !== (int)$listing->user_id) {
+            $listing->increment('views');
+            $listing->refresh();
+        }
+
         $listing->loadTranslationAttributes();
         return new ListingResource($listing);
     }
