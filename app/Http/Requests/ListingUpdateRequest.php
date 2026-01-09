@@ -51,7 +51,7 @@ class ListingUpdateRequest extends FormRequest
             ],
             'exchange'   => 'sometimes|in:0,1',
 
-            'description'       => 'required|string|max:500',
+            'description'       => 'nullable|string|max:500',
 
             // Optional images, not required
             'images'   => 'nullable|array|max:10',

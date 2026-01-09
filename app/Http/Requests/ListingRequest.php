@@ -43,12 +43,9 @@ class ListingRequest extends FormRequest
             'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin',
             'exchange'   => 'sometimes|in:0,1',
 
-//            'description' => 'required|string|max:500',
             'description' => 'nullable|string|max:500',
 
             // Max 10 images
-//            'images'   => 'required|array|max:10',
-//            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240', // 5MB
             'images'   => 'nullable|array|max:10',
             'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ];

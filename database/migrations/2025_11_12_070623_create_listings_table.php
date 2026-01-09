@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('vin', 17)->nullable()->unique();
             $table->decimal('price', 12, 2)->nullable();
             $table->boolean('exchange')->default(false);
-            $table->text('description');
+            $table->text('description')->nullable();
 
             // Status
             $table->enum('status', ['draft', 'pending', 'published', 'rejected', 'expired'])
