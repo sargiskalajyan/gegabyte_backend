@@ -393,6 +393,14 @@ class  ListingController extends Controller
         }
 
         $userPackage = $user->activePackage();
+
+        if (! $userPackage) {
+            return response()->json([
+                'message' => __('listings.top_limit_reached') ?? 'Top listings limit reached',
+                'remaining' => 0,
+            ], 403);
+        }
+
         $userPackage->loadMissing('package');
 
         $days = (int)($userPackage->package->included_featured_days ?? 0);
@@ -408,12 +416,16 @@ class  ListingController extends Controller
             return response()->json(['message' => __('listings.already_top') ?? 'Listing already top'], 200);
         }
 
+
         if (! $userPackage->exists) {
             return response()->json([
                 'message' => __('listings.top_limit_reached') ?? 'Top listings limit reached',
                 'remaining' => 0,
             ], 403);
         }
+
+
+
 
         try {
             DB::transaction(function () use ($user, $userPackage, $listing, $days) {
@@ -439,18 +451,20 @@ class  ListingController extends Controller
                 }
 
                 if ($lockedPackage->remainingTopListings() <= 0) {
-                    abort(response()->json([
+                    throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
                         'message' => __('listings.top_limit_reached') ?? 'Top listings limit reached',
                         'remaining' => 0,
                     ], 403));
                 }
 
                 $listing->is_top = true;
-                $listing->top_expires_at = $days > 0 ? now()->addDays($days) : null;
+                $listing->top_expires_at = $days > 0 ? now()->startOfDay()->addDays($days) : null;
                 $listing->save();
 
                 $lockedPackage->increment('used_top_listings');
             });
+        } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
+            return $e->getResponse();
         } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e) {
             // abort(response()) throws HttpException; let Laravel handle the response.
             throw $e;
