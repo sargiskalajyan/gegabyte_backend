@@ -40,7 +40,7 @@ class ListingRequest extends FormRequest
             'year'       => 'nullable|integer|min:1900|max:'.(date('Y') + 1),
             'mileage'    => 'nullable|integer|min:0',
             'price'      => 'nullable|numeric|min:0',
-            'vin'        => 'nullable|string|min:10|max:17|unique:listings,vin',
+            'vin'        => 'nullable|string|min:10|max:17',
             'exchange'   => 'sometimes|in:0,1',
 
             'description' => 'nullable|string|max:500',
