@@ -15,6 +15,8 @@ class Listing extends Model
      */
     protected $casts = [
         'exchange' => 'boolean',
+        'is_top'   => 'boolean',
+        'top_expires_at' => 'datetime',
     ];
 
     protected $appends = [

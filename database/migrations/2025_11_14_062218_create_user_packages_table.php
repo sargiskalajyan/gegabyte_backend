@@ -22,6 +22,7 @@ return new class extends Migration
             // counters
             $table->unsignedSmallInteger('used_active_listings')->default(0);
             $table->unsignedSmallInteger('used_featured_days')->default(0);
+            $table->unsignedSmallInteger('used_top_listings')->default(0);
 
             $table->enum('status', ['active','expired','pending'])->default('pending');
 

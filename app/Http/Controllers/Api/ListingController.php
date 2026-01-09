@@ -377,6 +377,95 @@ class  ListingController extends Controller
     }
 
 
+    /**
+     * @param $lang
+     * @param Listing $listing
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addTop($lang, Listing $listing)
+    {
+        app()->setLocale($lang);
+
+        $user = auth('api')->user();
+
+        if ($listing->user_id !== $user->id) {
+            return response()->json(['message' => __('listings.forbidden')], 403);
+        }
+
+        $userPackage = $user->activePackage();
+        $userPackage->loadMissing('package');
+
+        $days = (int)($userPackage->package->included_featured_days ?? 0);
+
+        // If already top and not expired, don't consume another slot.
+        if (
+            $listing->is_top
+            && (
+                is_null($listing->top_expires_at)
+                || $listing->top_expires_at->isFuture()
+            )
+        ) {
+            return response()->json(['message' => __('listings.already_top') ?? 'Listing already top'], 200);
+        }
+
+        if (! $userPackage->exists) {
+            return response()->json([
+                'message' => __('listings.top_limit_reached') ?? 'Top listings limit reached',
+                'remaining' => 0,
+            ], 403);
+        }
+
+        try {
+            DB::transaction(function () use ($user, $userPackage, $listing, $days) {
+                $lockedPackage = $user->packages()
+                    ->whereKey($userPackage->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+                $lockedPackage->loadMissing('package');
+
+                // If listing was top but expired (not yet cleaned), free its slot first.
+                if (
+                    $listing->is_top
+                    && $listing->top_expires_at
+                    && $listing->top_expires_at->isPast()
+                ) {
+                    $listing->is_top = false;
+                    $listing->top_expires_at = null;
+                    $listing->save();
+
+                    if (($lockedPackage->used_top_listings ?? 0) > 0) {
+                        $lockedPackage->decrement('used_top_listings', 1);
+                    }
+                }
+
+                if ($lockedPackage->remainingTopListings() <= 0) {
+                    abort(response()->json([
+                        'message' => __('listings.top_limit_reached') ?? 'Top listings limit reached',
+                        'remaining' => 0,
+                    ], 403));
+                }
+
+                $listing->is_top = true;
+                $listing->top_expires_at = $days > 0 ? now()->addDays($days) : null;
+                $listing->save();
+
+                $lockedPackage->increment('used_top_listings');
+            });
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e) {
+            // abort(response()) throws HttpException; let Laravel handle the response.
+            throw $e;
+        } catch (\Throwable $e) {
+            return response()->json(['message' => __('listings.error_updating'), 'error' => $e->getMessage()], 500);
+        }
+
+        return response()->json([
+            'message' => __('listings.marked_top') ?? 'Listing marked as top',
+            'top_expires_at' => $listing->top_expires_at,
+            'remaining' => $user->activePackage()->remainingTopListings(),
+        ]);
+    }
+
+
 
 
 
@@ -399,6 +488,14 @@ class  ListingController extends Controller
         DB::beginTransaction();
 
         try {
+            // If deleting a top listing, free 1 top slot from the active package.
+            if ($listing->is_top) {
+                $userPackage = $user->activePackage();
+                if ($userPackage->exists && ($userPackage->used_top_listings ?? 0) > 0) {
+                    $userPackage->decrement('used_top_listings', 1);
+                }
+            }
+
             // Collect physical file paths
             $filesToDelete = [];
 

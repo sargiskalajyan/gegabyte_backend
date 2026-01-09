@@ -26,6 +26,7 @@ class UserPackage extends Model
         'expires_at',
         'used_active_listings',
         'used_featured_days',
+        'used_top_listings',
         'status'
     ];
 
@@ -86,6 +87,15 @@ class UserPackage extends Model
     public function remainingListings(): int
     {
         return max(0, $this->package->max_active_listings - $this->used_active_listings);
+    }
+
+
+    /**
+     * @return int
+     */
+    public function remainingTopListings(): int
+    {
+        return max(0, ($this->package->top_listings_count ?? 0) - ($this->used_top_listings ?? 0));
     }
 
 

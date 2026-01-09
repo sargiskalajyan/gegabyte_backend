@@ -53,4 +53,14 @@ return [
     'invalid_status_transition' => 'Invalid status transition from :from to :to.',
     'package_limit_reached' => 'You cannot activate more listings. Please upgrade your package.',
     'status_updated' => 'Listing status has been updated successfully.',
+    'cannot_edit_listing' => 'This listing cannot be edited in its current state.',
+    'max_images_exceeded' => 'You exceeded the maximum number of images allowed.',
+    'error_deleting' => 'Error deleting listing.',
+
+    // Top listings
+    'top_limit_reached' => 'Top listings limit reached for your package.',
+    'already_top' => 'Listing is already marked as top.',
+    'marked_top' => 'Listing marked as top successfully.',
+    'not_top' => 'Listing is not marked as top.',
+    'removed_top' => 'Top status removed from listing.',
 ];

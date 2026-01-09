@@ -396,6 +396,41 @@ class SearchController extends Controller
     /**
      * @param Request $request
      * @param $lang
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function topListings(Request $request, $lang)
+    {
+        app()->setLocale($lang);
+
+        $listings = Listing::with([
+            'photos',
+            'user' => function ($q) {
+                $q->withCount([
+                    'listings as listings_count' => fn ($q) =>
+                    $q->where('status', 'published')
+                ]);
+            }
+        ])
+            ->where('status', 'published')
+            ->where('is_top', true)
+            ->where(function ($q) {
+                $q->whereNull('top_expires_at')
+                    ->orWhere('top_expires_at', '>', now());
+            })
+            ->orderByDesc('published_until')
+            ->limit(3)
+            ->get();
+
+        // load translation attributes for each listing
+        $listings->each(fn($l) => $l->loadTranslationAttributes());
+
+        return ListingResource::collection($listings);
+    }
+
+
+    /**
+     * @param Request $request
+     * @param $lang
      * @return \Illuminate\Http\JsonResponse
      */
     public function models(Request $request, $lang)

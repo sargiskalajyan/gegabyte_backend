@@ -51,6 +51,9 @@ return new class extends Migration
             $table->timestamp('featured_until')->nullable();
             $table->timestamp('published_until')->nullable();
             $table->unsignedInteger('views')->default(0);
+            $table->boolean('is_top')->default(false);
+            $table->timestamp('top_expires_at')->nullable();
+
 
             $table->timestamps();
 
@@ -59,6 +62,7 @@ return new class extends Migration
             $table->index(['status', 'category_id'], 'listing_status_category_idx');
             $table->index(['make_id', 'car_model_id'], 'listing_make_model_idx');
             $table->index(['location_id', 'category_id'], 'listing_location_category_idx');
+            $table->index('top_expires_at', 'listing_top_expires_idx');
 
             // Search / sorting
             $table->index('price', 'listing_price_idx');
@@ -67,6 +71,7 @@ return new class extends Migration
             $table->index('views', 'listing_views_idx');
             $table->index('featured_until', 'listing_featured_idx');
             $table->index('published_until', 'listing_published_idx');
+            $table->index('is_top');
 
             // Full-text search
             $table->fullText(['description'], 'listing_fulltext_idx');
