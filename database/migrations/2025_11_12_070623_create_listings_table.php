@@ -39,7 +39,7 @@ return new class extends Migration
             // Core Data
             $table->year('year')->nullable();
             $table->unsignedInteger('mileage')->nullable();
-            $table->string('vin', 17)->nullable()->unique();
+            $table->string('vin', 17)->nullable();
             $table->decimal('price', 12, 2)->nullable();
             $table->boolean('exchange')->default(false);
             $table->text('description')->nullable();
