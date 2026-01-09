@@ -488,14 +488,6 @@ class  ListingController extends Controller
         DB::beginTransaction();
 
         try {
-            // If deleting a top listing, free 1 top slot from the active package.
-            if ($listing->is_top) {
-                $userPackage = $user->activePackage();
-                if ($userPackage->exists && ($userPackage->used_top_listings ?? 0) > 0) {
-                    $userPackage->decrement('used_top_listings', 1);
-                }
-            }
-
             // Collect physical file paths
             $filesToDelete = [];
 
