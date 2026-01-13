@@ -11,6 +11,13 @@ return [
     'add_new'      => 'Добавить новый',
     'cancel'       => 'Отмена',
     'select_item'  => 'Выберите элемент',
+    'search'       => 'Поиск',
+    'clear_search' => 'Очистить',
+    'choose_file_help' => 'Выберите изображение (JPG/PNG/WebP).',
+    'choose_file'       => 'Выбрать файл',
+    'no_file_chosen'    => 'Файл не выбран',
+    'selected_file'    => 'Выбранный файл',
+    'current_file'     => 'Текущий файл',
 
     'error_title'  => 'Ошибка',
     'validation' => [

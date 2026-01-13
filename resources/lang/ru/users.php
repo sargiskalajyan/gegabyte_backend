@@ -11,4 +11,6 @@ return [
     'total_listings' => 'Всего объявлений',
     'actions' => 'Действия',
     'login_as' => 'Войти как пользователь',
+    'search' => 'Поиск',
+    'clear_search' => 'Очистить',
 ];

@@ -4,15 +4,39 @@
         @include('components.toast')
     </div>
 
-    {{-- TYPE SELECT --}}
-    <div class="mb-3">
-        <select class="form-control w-25" wire:change="changeType($event.target.value)">
-            @foreach(config('translations') as $key => $item)
-                <option value="{{ $key }}" @selected($type === $key)>
-                    {{ __('translations.types.' . $key) }}
-                </option>
-            @endforeach
-        </select>
+    {{-- TYPE SELECT + SEARCH --}}
+    <div class="row g-3 mb-3 align-items-end">
+        <div class="col-12 col-md-3">
+            <select class="form-control" wire:change="changeType($event.target.value)">
+                @foreach(config('translations') as $key => $item)
+                    <option value="{{ $key }}" @selected($type === $key)>
+                        {{ __('translations.types.' . $key) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-12 col-md-5">
+            <div class="input-group input-group-outline @if(strlen($search ?? '') > 0) is-filled @endif">
+                <label class="form-label">{{ __('translations.search') }}</label>
+                <input type="text"
+                       class="form-control"
+                       wire:model.live.debounce.300ms="search"
+                       autocomplete="off">
+            </div>
+        </div>
+
+        <div class="col-12 col-md-auto">
+            @if(!empty($search))
+                <button class="btn btn-outline-secondary mb-0"
+                        type="button"
+                        wire:click="$set('search','')"
+                        wire:loading.attr="disabled"
+                        wire:target="search">
+                    {{ __('translations.clear_search') }}
+                </button>
+            @endif
+        </div>
     </div>
 
     {{-- ADD NEW --}}
@@ -47,9 +71,30 @@
 
                             {{-- categories image --}}
                         @elseif($type === 'categories' && $field === 'image_url')
-                            <input type="file"
-                                   class="form-control"
-                                   wire:model="form.base.image_url">
+                            <div class="d-flex flex-wrap align-items-center gap-2"
+                                 wire:key="category-image-input-{{ $type }}-{{ $editingId ?? 'new' }}">
+                                <input id="category_image_url"
+                                       type="file"
+                                       class="d-none"
+                                       accept="image/*"
+                                       wire:model="form.base.image_url">
+
+                                <label for="category_image_url" class="btn btn-outline-secondary mb-0">
+                                    {{ __('translations.choose_file') }}
+                                </label>
+
+                                <span class="text-sm text-muted">
+                                    @if(isset($form['base']['image_url']) && is_object($form['base']['image_url']))
+                                        {{ $form['base']['image_url']->getClientOriginalName() }}
+                                    @elseif(isset($form['base']['image_url']) && is_string($form['base']['image_url']) && $form['base']['image_url'])
+                                        {{ basename($form['base']['image_url']) }}
+                                    @else
+                                        {{ __('translations.no_file_chosen') }}
+                                    @endif
+                                </span>
+                            </div>
+
+                            <div class="form-text">{{ __('translations.choose_file_help') }}</div>
 
                             @if(isset($form['base']['image_url']) && is_string($form['base']['image_url']))
                                 <img src="{{ asset('storage/'.$form['base']['image_url']) }}"
@@ -62,7 +107,9 @@
                             <select class="form-control" wire:model.defer="form.base.make_id">
                                 <option value="">{{ __('translations.select_item') }}</option>
                                 @foreach($relatedItems as $item)
-                                    <option value="{{ $item->id }}">#{{ $item->id }}</option>
+                                    <option value="{{ $item->id }}">
+                                        #{{ $item->id }}@if(!empty($item->name)) — {{ $item->name }} @endif
+                                    </option>
                                 @endforeach
                             </select>
 
@@ -71,7 +118,9 @@
                             <select class="form-control" wire:model.defer="form.base.category_id">
                                 <option value="">{{ __('translations.select_item') }}</option>
                                 @foreach($relatedItems as $item)
-                                    <option value="{{ $item->id }}">#{{ $item->id }}</option>
+                                    <option value="{{ $item->id }}">
+                                        #{{ $item->id }}@if(!empty($item->name)) — {{ $item->name }} @endif
+                                    </option>
                                 @endforeach
                             </select>
 
@@ -140,6 +189,10 @@
                                 @if($type === 'categories' && $field === 'image_url' && $parent->$field)
                                     <img src="{{ asset('storage/'.$parent->$field) }}"
                                          style="height:40px">
+                                @elseif($type === 'makes' && $field === 'category_id')
+                                    {{ $relatedMap[$parent->$field] ?? ('#'.($parent->$field ?? '-')) }}
+                                @elseif($type === 'car_models' && $field === 'make_id')
+                                    {{ $relatedMap[$parent->$field] ?? ('#'.($parent->$field ?? '-')) }}
                                 @else
                                     {{ $parent->$field ?? '-' }}
                                 @endif

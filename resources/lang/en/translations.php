@@ -11,6 +11,13 @@ return [
     'add_new'      => 'Add New',
     'cancel'       => 'Cancel',
     'select_item'  => 'Select item',
+    'search'       => 'Search',
+    'clear_search' => 'Clear',
+    'choose_file_help' => 'Choose an image file (JPG/PNG/WebP).',
+    'choose_file'       => 'Choose file',
+    'no_file_chosen'    => 'No file chosen',
+    'selected_file'    => 'Selected file',
+    'current_file'     => 'Current file',
 
     'error_title'  => 'Error',
     'validation' => [

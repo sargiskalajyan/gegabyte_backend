@@ -11,6 +11,13 @@ return [
     'add_new'      => 'Ավելացնել նոր',
     'cancel'       => 'Չեղարկել',
     'select_item'  => 'Ընտրեք տարր',
+    'search'       => 'Որոնել',
+    'clear_search' => 'Մաքրել',
+    'choose_file_help' => 'Ընտրեք պատկեր (JPG/PNG/WebP).',
+    'choose_file'       => 'Ընտրել ֆայլ',
+    'no_file_chosen'    => 'Ֆայլ ընտրված չէ',
+    'selected_file'    => 'Ընտրված ֆայլ',
+    'current_file'     => 'Ընթացիկ ֆայլ',
 
     'error_title'  => 'Սխալ',
     'validation' => [

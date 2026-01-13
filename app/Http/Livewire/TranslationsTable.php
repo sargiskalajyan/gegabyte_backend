@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class TranslationsTable extends Component
@@ -18,8 +19,11 @@ class TranslationsTable extends Component
     public string $type = 'categories';
     public array $config = [];
 
+    public string $search = '';
+
     public $languages;
     public $relatedItems = []; // makes / categories
+    public array $relatedMap = []; // id => name
     public ?int $editingId = null;
     public bool $showForm = false;
     public array $form = [];
@@ -47,6 +51,21 @@ class TranslationsTable extends Component
         return $rules;
     }
 
+    private function forgetFiltersCache(): void
+    {
+        try {
+            $codes = DB::table('languages')->pluck('code');
+            foreach ($codes as $code) {
+                $code = (string) $code;
+                if ($code !== '') {
+                    Cache::forget("filters_{$code}");
+                }
+            }
+        } catch (\Throwable $e) {
+            // Cache invalidation should never block saving translations.
+        }
+    }
+
     public function mount()
     {
         $this->loadConfig();
@@ -55,9 +74,14 @@ class TranslationsTable extends Component
     public function changeType(string $type)
     {
         $this->type = $type;
-        $this->reset(['editingId', 'form', 'showForm']);
+        $this->reset(['editingId', 'form', 'showForm', 'search']);
         $this->resetPage();
         $this->loadConfig();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
     }
 
     private function loadConfig()
@@ -67,14 +91,53 @@ class TranslationsTable extends Component
 
         $this->languages = DB::table('languages')->orderBy('code')->get();
 
+        $languageId = $this->getCurrentLanguageId();
+
         // Load related select data
         if ($this->type === 'car_models') {
-            $this->relatedItems = DB::table('makes')->get();
+            $this->relatedItems = DB::table('makes')
+                ->leftJoin('make_translations as mt', function ($join) use ($languageId) {
+                    $join
+                        ->on('mt.make_id', '=', 'makes.id')
+                        ->where('mt.language_id', '=', $languageId);
+                })
+                ->select('makes.id', 'mt.name')
+                ->orderBy('makes.id')
+                ->get();
         } elseif ($this->type === 'makes') {
-            $this->relatedItems = DB::table('categories')->get();
+            $this->relatedItems = DB::table('categories')
+                ->leftJoin('category_translations as ct', function ($join) use ($languageId) {
+                    $join
+                        ->on('ct.category_id', '=', 'categories.id')
+                        ->where('ct.language_id', '=', $languageId);
+                })
+                ->select('categories.id', 'ct.name')
+                ->orderBy('categories.id')
+                ->get();
         } else {
             $this->relatedItems = [];
         }
+
+        $this->relatedMap = collect($this->relatedItems)
+            ->mapWithKeys(fn ($row) => [(int) $row->id => (string) ($row->name ?? '')])
+            ->all();
+    }
+
+    private function getCurrentLanguageId(): int
+    {
+        $code = (string) app()->getLocale();
+
+        $lang = DB::table('languages')->where('code', $code)->first();
+        if ($lang && isset($lang->id)) {
+            return (int) $lang->id;
+        }
+
+        $first = DB::table('languages')->orderBy('id')->first();
+        if ($first && isset($first->id)) {
+            return (int) $first->id;
+        }
+
+        return 1;
     }
 
     public function create()
@@ -177,6 +240,8 @@ class TranslationsTable extends Component
             }
         });
 
+        $this->forgetFiltersCache();
+
         $this->reset(['editingId', 'form', 'showForm']);
 
         $this->dispatch('show-admin-toast',
@@ -198,18 +263,61 @@ class TranslationsTable extends Component
                 ->delete();
         });
 
+        $this->forgetFiltersCache();
+
         $this->resetPage();
     }
 
     public function render()
     {
-        $parents = DB::table($this->config['base_table'])
-            ->orderBy('id')
+        $baseTable = $this->config['base_table'];
+        $translationTable = $this->config['translation_table'];
+        $foreignKey = $this->config['foreign_key'];
+
+        $parentsQuery = DB::table($baseTable);
+
+        $search = trim($this->search);
+        if ($search !== '') {
+            $escaped = addcslashes($search, "\\%_");
+            $like = "%{$escaped}%";
+
+            $parentsQuery->where(function ($query) use ($search, $like, $baseTable, $translationTable, $foreignKey) {
+                if (ctype_digit($search)) {
+                    $query->orWhere("{$baseTable}.id", (int) $search);
+                }
+
+                foreach (($this->config['base_fields'] ?? []) as $field) {
+                    if ($field === 'image_url') {
+                        continue;
+                    }
+
+                    $query->orWhere("{$baseTable}.{$field}", 'like', $like);
+                }
+
+                $query->orWhereExists(function ($subQuery) use ($like, $baseTable, $translationTable, $foreignKey) {
+                    $subQuery
+                        ->select(DB::raw(1))
+                        ->from($translationTable)
+                        ->whereColumn("{$translationTable}.{$foreignKey}", "{$baseTable}.id")
+                        ->where(function ($translationQuery) use ($like) {
+                            foreach ($this->config['fields'] as $field) {
+                                $translationQuery->orWhere($field, 'like', $like);
+                            }
+                        });
+                });
+            });
+        }
+
+        $parents = $parentsQuery
+            ->orderBy("{$baseTable}.id")
             ->paginate(10);
 
-        $translations = DB::table($this->config['translation_table'])
+        $parentIds = $parents->getCollection()->pluck('id')->all();
+
+        $translations = DB::table($translationTable)
+            ->when(! empty($parentIds), fn ($q) => $q->whereIn($foreignKey, $parentIds))
             ->get()
-            ->groupBy($this->config['foreign_key'])
+            ->groupBy($foreignKey)
             ->map(fn ($group) => $group->keyBy('language_id'));
 
         return view('livewire.translations-table', compact('parents', 'translations'));

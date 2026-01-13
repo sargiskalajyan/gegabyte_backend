@@ -11,4 +11,6 @@ return [
     'total_listings' => 'Total Listings',
     'actions' => 'Actions',
     'login_as' => 'Login as user',
+    'search' => 'Search',
+    'clear_search' => 'Clear',
 ];

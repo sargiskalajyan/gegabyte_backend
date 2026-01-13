@@ -12,6 +12,32 @@
 
         <div class="card-body px-0">
 
+            <div class="px-4 pb-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-5">
+                        <div class="input-group input-group-outline @if(strlen($search ?? '') > 0) is-filled @endif">
+                            <label class="form-label">{{ __('users.search') }}</label>
+                            <input type="text"
+                                   class="form-control"
+                                   wire:model.live.debounce.300ms="search"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-auto">
+                        @if(!empty($search))
+                            <button class="btn btn-outline-secondary mb-0"
+                                    type="button"
+                                    wire:click="$set('search','')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="search">
+                                {{ __('users.clear_search') }}
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table align-items-center mb-0 text-center">
                     <thead>
@@ -51,7 +77,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">{{ __('users.no_users') }}</td>
+                            <td colspan="7" class="text-center">{{ __('users.no_users') }}</td>
                         </tr>
                     @endforelse
                     </tbody>
