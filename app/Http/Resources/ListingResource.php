@@ -48,9 +48,10 @@ class ListingResource extends JsonResource
 
             // PHOTOS
             'photos' => $this->photos->map(fn ($photo) => [
-                'id'        => $photo->id,
-                'url'       => $photo->url,
-                'thumbnail' => $photo->thumbnail,
+                'id'         => $photo->id,
+                'url'        => $photo->url,
+                'thumbnail'  => $photo->thumbnail,
+                'is_default' => $photo->is_default,
             ]),
 
 

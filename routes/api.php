@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserPackageController;
 use App\Http\Controllers\Api\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +70,7 @@ Route::group([
         Route::post('password/change', [AuthController::class, 'changePassword']);
         Route::post('profile/update',   [AuthController::class, 'updateProfile']);
         Route::get('user',  [AuthController::class, 'user']);
+        Route::get('user/package-stats', [UserPackageController::class, 'getPackageStats']);
 
         Route::group(['prefix' => 'listings'], function () {
             Route::get('/', [ListingController::class, 'index']);
