@@ -59,6 +59,8 @@ class TranslationsTable extends Component
                 $code = (string) $code;
                 if ($code !== '') {
                     Cache::forget("filters_{$code}");
+                    Cache::forget("filters_{$code}_categories");
+                    Cache::forget("filters_{$code}_packages");
                 }
             }
         } catch (\Throwable $e) {

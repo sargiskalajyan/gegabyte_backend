@@ -273,7 +273,6 @@ class SearchController extends Controller
                 'conditions'    => Condition::with('translation')->get(),
                 'locations'     => Location::with('translation')->get(),
                 'makes'         => Make::with('translation')->get(),
-//                'models'        => CarModel::with('translation')->get(),
                 'colors'        => Color::with('translation')->get(),
                 'driver_types'  => DriverType::with('translation')->get(),
                 'currencies'    => Currency::with('translation')->get(),

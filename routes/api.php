@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\Api\FiltersController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserPackageController;
@@ -55,6 +56,14 @@ Route::group([
         Route::get('/makes/{id}',  [SearchController::class, 'makes']);
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });
+
+
+    
+    Route::group(['prefix' => 'filters'], function () {
+        Route::get('/categories', [FiltersController::class, 'categories']);
+        Route::get('/packages', [FiltersController::class, 'packages']);
+    });
+    
 
 
     Route::group(['prefix' => 'users'], function () {
