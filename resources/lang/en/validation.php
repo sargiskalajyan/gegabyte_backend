@@ -22,6 +22,7 @@ return [
     ],
     'exists'    => 'The selected :attribute is invalid.',
     'image'    => 'The :attribute must be an image.',
+    'uploaded' => 'The :attribute failed to upload.',
     'mimes'    => 'The :attribute must be a file of type: :values.',
     'accepted' => 'The :attribute must be accepted.',
     'in' => 'The selected :attribute is invalid.',

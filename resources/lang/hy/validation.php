@@ -22,6 +22,7 @@ return [
     ],
     'exists'   => 'Ընտրված :attribute արժեքը սխալ է։',
     'image'    => ':attribute դաշտը պետք է լինի նկար։',
+    'uploaded' => ':attribute-ն չկարողացավ բեռվել։',
     'mimes'    => ':attribute դաշտը պետք է լինի հետևյալ ձևաչափերից մեկը՝ :values։',
     'accepted' => ':attribute պետք է ընդունվի։',
     'in'       => 'Ընտրված :attribute-ն անվավեր է։',

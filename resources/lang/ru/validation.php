@@ -22,6 +22,7 @@ return [
     ],
     'exists'   => 'Выбранное значение :attribute недействительно.',
     'image'    => 'Поле :attribute должно быть изображением.',
+    'uploaded' => 'Не удалось загрузить :attribute.',
     'mimes'    => 'Поле :attribute должно быть файлом одного из типов: :values.',
     'accepted' => 'Поле :attribute должно быть принято.',
     'in'       => 'Выбранное значение :attribute недопустимо.',
