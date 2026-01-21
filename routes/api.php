@@ -95,5 +95,7 @@ Route::group([
 
         Route::post('packages/{package}/buy', [PackageController::class, 'buy']);
         Route::get('payments/{order}/status', [OrderController::class, 'status']);
+        // Authenticated user's payment history (paginated, localized)
+        Route::get('payments/history', [OrderController::class, 'history']);
     });
 });

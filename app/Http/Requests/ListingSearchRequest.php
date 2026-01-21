@@ -39,10 +39,9 @@ class ListingSearchRequest extends FormRequest
             'year_to'         => 'nullable|integer|gte:year_from|max:' . (date('Y') + 1),
 
             'keyword'         => 'nullable|string|max:255',
-
             'per_page'        => 'nullable|integer|min:1|max:100',
-
             'exchange'        => 'nullable|in:0,1',
+            'top'             => 'nullable|in:0,1',
         ];
     }
 }

@@ -170,7 +170,6 @@ class SearchController extends Controller
             if (!empty($validated['model_id'])) {
                 $q->orWhereIn('listings.car_model_id', $validated['model_id']);
             }
-
         });
 
         // SINGLE VALUE FILTERS
@@ -208,6 +207,11 @@ class SearchController extends Controller
 
         if (isset($validated['exchange'])) {
             $query->where('listings.exchange', (bool) $validated['exchange']);
+        }
+
+
+        if (isset($validated['top'])) {
+            $query->where('listings.is_top', (bool) $validated['top']);
         }
 
         // Order & paginate

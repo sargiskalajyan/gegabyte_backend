@@ -8,4 +8,5 @@ return [
     'payment_ignored'   => 'Payment ignored',
     'order_status'      => 'Order status',
     'package_found'     => 'Package not found or inactive',
+    'history'           => 'Payment history',
 ];

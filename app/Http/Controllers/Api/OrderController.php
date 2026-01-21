@@ -125,4 +125,48 @@ class OrderController extends Controller
             'order'   => $order
         ]);
     }
+
+
+    /**
+     * Get authenticated user's payment history (paginated) with translations
+     *
+     * @param Request $request
+     * @param string $lang
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function history(Request $request, $lang)
+    {
+        $user = $request->user();
+
+        $perPage = (int) $request->get('per_page', 15);
+        $perPage = max(1, min(100, $perPage));
+
+        $orders = Order::where('user_id', $user->id)
+            ->with(['package.translations', 'package.translation'])
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
+        $orders->getCollection()->transform(function (Order $order) {
+            return [
+                'id' => $order->id,
+                'reference' => $order->reference,
+                'amount' => $order->amount,
+                'status' => $order->status,
+                'gateway' => $order->gateway,
+                'payload' => $order->payload,
+                'created_at' => $order->created_at,
+                'package' => $order->package ? [
+                    'id' => $order->package->id,
+                    'price' => $order->package->price,
+                    'duration_days' => $order->package->duration_days,
+                    'name' => $order->package->name,
+                ] : null,
+            ];
+        });
+
+        return response()->json([
+            'message' => __('payments.history'),
+            'data' => $orders
+        ]);
+    }
 }
