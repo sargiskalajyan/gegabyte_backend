@@ -154,6 +154,7 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'gateway' => $order->gateway,
                 'payload' => $order->payload,
+                'description' => $order->description,
                 'created_at' => $order->created_at,
                 'package' => $order->package ? [
                     'id' => $order->package->id,
