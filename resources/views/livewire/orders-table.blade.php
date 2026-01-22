@@ -21,6 +21,7 @@
                         <th>{{ __('orders.amount') }}</th>
                         <th>{{ __('orders.gateway') }}</th>
                         <th>{{ __('orders.status') }}</th>
+                        <th>{{ __('orders.description') }}</th>
                         <th>{{ __('orders.created_at') }}</th>
                     </tr>
                     </thead>
@@ -63,7 +64,11 @@
 
                                 <span class="badge bg-gradient-{{ $statusColors[$order->status] ?? 'secondary' }}">
                                         {{ __('orders.status_' . $order->status) }}
-                                    </span>
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ $order->description }}
                             </td>
 
                             <td>

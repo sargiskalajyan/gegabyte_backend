@@ -9,6 +9,7 @@ return [
     'amount' => 'Գումար',
     'gateway' => 'Վճարման համակարգ',
     'status' => 'Կարգավիճակ',
+    'description' => 'Նկարագրություն',
     'created_at' => 'Ստեղծվել է',
 
     'status_pending' => 'Սպասման մեջ',

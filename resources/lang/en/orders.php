@@ -9,6 +9,7 @@ return [
     'amount' => 'Amount',
     'gateway' => 'Gateway',
     'status' => 'Status',
+    'description' => 'Description',
     'created_at' => 'Created At',
 
     'status_pending' => 'Pending',

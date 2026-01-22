@@ -12,6 +12,16 @@ class VehicleCatalogSeeder extends Seeder
     {
         $vehicleService = new VehicleCatalogService();
 
+        // Clear tables that will be repopulated
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        DB::table('category_translations')->truncate();
+        DB::table('categories')->truncate();
+        DB::table('make_translations')->truncate();
+        DB::table('makes')->truncate();
+        DB::table('car_model_translations')->truncate();
+        DB::table('car_models')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         DB::transaction(function () use ($vehicleService) {
             // Languages: code => id
             $languages = DB::table('languages')->pluck('id', 'code')->toArray();

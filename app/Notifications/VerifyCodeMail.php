@@ -5,6 +5,7 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Notifications\Notification;
 
 class VerifyCodeMail extends Notification
@@ -33,6 +34,7 @@ class VerifyCodeMail extends Notification
      */
     public function via(object $notifiable): array
     {
+//        return [\App\Notifications\Channels\SendGridChannel::class];
         return ['mail'];
     }
 
