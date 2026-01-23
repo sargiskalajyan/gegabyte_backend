@@ -46,7 +46,7 @@ class ListingUpdateRequest extends FormRequest
 
             // Optional images, not required
             'images'   => 'nullable|array|max:10',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:102400',
         ];
     }
 

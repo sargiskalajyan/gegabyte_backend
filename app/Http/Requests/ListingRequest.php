@@ -47,7 +47,7 @@ class ListingRequest extends FormRequest
 
             // Max 10 images
             'images'   => 'nullable|array|max:10',
-            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:102400',
         ];
     }
 
