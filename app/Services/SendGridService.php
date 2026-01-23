@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Mail\Mailable;
 
 class SendGridService
@@ -53,7 +54,20 @@ class SendGridService
             ->withHeaders(['Accept' => 'application/json'])
             ->post('https://api.sendgrid.com/v3/mail/send', $payload);
 
-        return $response->successful();
+        if (!$response->successful()) {
+            try {
+                Log::error('SendGrid sendMailable failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'payload' => $payload,
+                ]);
+            } catch (\Throwable $e) {
+                // swallow logging errors to avoid breaking mail flow
+            }
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -92,6 +106,19 @@ class SendGridService
             ->withHeaders(['Accept' => 'application/json'])
             ->post('https://api.sendgrid.com/v3/mail/send', $payload);
 
-        return $response->successful();
+        if (!$response->successful()) {
+            try {
+                Log::error('SendGrid sendHtml failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'payload' => $payload,
+                ]);
+            } catch (\Throwable $e) {
+                // swallow logging errors to avoid breaking mail flow
+            }
+            return false;
+        }
+
+        return true;
     }
 }

@@ -34,8 +34,8 @@ class VerifyCodeMail extends Notification
      */
     public function via(object $notifiable): array
     {
-//        return [\App\Notifications\Channels\SendGridChannel::class];
-        return ['mail'];
+        return [\App\Notifications\Channels\SendGridChannel::class];
+//        return ['mail'];
     }
 
     /**
