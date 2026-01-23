@@ -1,14 +1,13 @@
 <div
-    class="toast fade hide p-2 bg-white"
+    class="toast fade hide p-2 bg-white shadow rounded"
     role="alert"
     aria-live="assertive"
     id="adminToast"
     aria-atomic="true"
 >
-    <div class="toast-header border-0">
-        <i class="material-icons me-2 text-success" id="toastIcon">check</i>
-        <span class="me-auto font-weight-bold" id="toastTitle">{{ __('listings.toast_title') }}</span>
-        <small class="text-body" id="toastTime">{{ __('listings.just_now') }}</small>
+    <div class="toast-header border-0 align-items-center">
+        <span class="me-auto fw-bold" id="toastTitle">{{ __('listings.toast_title') }}</span>
+        <small class="text-muted" id="toastTime">{{ __('listings.just_now') }}</small>
         <i class="fas fa-times text-md ms-3 cursor-pointer" data-bs-dismiss="toast"></i>
     </div>
     <hr class="horizontal dark m-0">
@@ -28,7 +27,6 @@
 
             document.getElementById('toastTitle').textContent = event.title;
             document.getElementById('toastBody').textContent = event.message;
-            document.getElementById('toastIcon').textContent = event.icon ?? 'notifications';
 
             if (event.image) {
                 document.getElementById('toastImageWrapper').classList.remove('d-none');

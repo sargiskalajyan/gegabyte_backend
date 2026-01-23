@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="modal-body">
-                    <div id="galleryCarousel" class="carousel slide">
+                    <div id="galleryCarousel" class="carousel slide" style="background: black">
                         <div class="carousel-inner">
                             @foreach ($galleryPhotos as $i => $photo)
                                 <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">

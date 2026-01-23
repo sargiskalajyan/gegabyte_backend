@@ -213,13 +213,22 @@ class TranslationsTable extends Component
                     $this->form['base']['image_url']->store('categories', 'public');
             }
 
+            $baseData = $this->form['base'] ?? [];
+
             if (! $this->editingId) {
-                $this->editingId = DB::table($this->config['base_table'])
-                    ->insertGetId($this->form['base'] ?? []);
+                if (! empty($baseData)) {
+                    $this->editingId = DB::table($this->config['base_table'])
+                        ->insertGetId($baseData);
+                } else {
+                    $this->editingId = DB::table($this->config['base_table'])
+                        ->insertGetId([]);
+                }
             } else {
-                DB::table($this->config['base_table'])
-                    ->where('id', $this->editingId)
-                    ->update($this->form['base'] ?? []);
+                if (! empty($baseData)) {
+                    DB::table($this->config['base_table'])
+                        ->where('id', $this->editingId)
+                        ->update($baseData);
+                }
             }
 
             foreach ($this->form['translations'] as $languageId => $fields) {
