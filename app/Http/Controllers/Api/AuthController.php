@@ -81,7 +81,7 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         if (!$token = auth('api')->attempt($credentials)) {
-            return response()->json(['message' => __('auth.failed')], 401);
+            return response()->json(['message' => __('auth.failed')], 403);
         }
 
         $user       = auth('api')->user();

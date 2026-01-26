@@ -38,14 +38,19 @@ class VehicleCatalogService
      *
      * @return array<string, string[]>
      */
-    public function getMakesAndModelsFromAutoAm(): array
+    public function getMakesAndModelsFromAutoAm(int $autoCategoryId = null): array
     {
         $base = 'https://auto.am';
         $headers = [
             'User-Agent' => 'Mozilla/5.0 (compatible; VehicleCatalogService/1.0)'
         ];
 
-        $resp = Http::withHeaders($headers)->get($base);
+        $url = $base;
+        if ($autoCategoryId !== null) {
+            $url = rtrim($base, '/') . '/filters/' . intval($autoCategoryId);
+        }
+
+        $resp = Http::withHeaders($headers)->get($url);
         if (!$resp->successful()) {
             return [];
         }
@@ -85,13 +90,7 @@ class VehicleCatalogService
         foreach ($makes as $makeId => $makeName) {
             $models = [];
 
-
-
             foreach ($modelEndpoints as $endpoint) {
-
-
-
-                // try a few param names
                 $paramsList = [
                     ['make' => $makeId],
                     ['make_id' => $makeId],
@@ -100,15 +99,13 @@ class VehicleCatalogService
                     ['make[]' => $makeId],
                 ];
 
-                // If endpoint is a template (contains %s), format it and request without query params
                 if (strpos($endpoint, '%s') !== false) {
                     $url = rtrim($base, '/') . '/' . ltrim(sprintf($endpoint, $makeId), '/');
                     $paramAttempts = [[]];
                 } else {
-
+                    $url = rtrim($base, '/') . '/' . ltrim($endpoint, '/');
+                    $paramAttempts = $paramsList;
                 }
-
-
 
                 foreach ($paramAttempts as $params) {
                     try {
@@ -123,7 +120,6 @@ class VehicleCatalogService
 
                     $body = $r->body();
 
-                    // If this URL is the sell/models route, try parsing the specific select#v-model first
                     if (strpos($url, '/sell/models') !== false) {
                         libxml_use_internal_errors(true);
                         $domSell = new \DOMDocument();
@@ -144,13 +140,10 @@ class VehicleCatalogService
                         if (!empty($models)) {
                             break 2;
                         }
-                        // otherwise fall through to try JSON or generic parsing
                     }
 
-                    // if JSON response with simple array of objects or strings
                     $json = json_decode($body, true);
                     if (is_array($json)) {
-                        // Try to map common shapes: array of strings or array of {id,name}
                         if (array_values($json) === $json) {
                             foreach ($json as $item) {
                                 if (is_string($item)) {
@@ -170,12 +163,10 @@ class VehicleCatalogService
                         }
                     }
 
-                    // If we already found models, break
                     if (!empty($models)) {
                         break 2;
                     }
 
-                    // Otherwise, try parsing HTML for option tags (generic)
                     libxml_use_internal_errors(true);
                     $dom2 = new \DOMDocument();
                     if (@$dom2->loadHTML($body)) {
@@ -193,31 +184,31 @@ class VehicleCatalogService
                         }
                     }
 
-                            if (!empty($models)) {
-                                break 2;
-                            }
-                        }
+                    if (!empty($models)) {
+                        break 2;
                     }
+                }
+            }
 
-                    // Ensure unique and remove placeholder/dash entries
-                    $clean = array_values(array_unique(array_filter($models)));
-                    // remove any items that are only dashes or common placeholders
-                    $clean = array_values(array_filter($clean, function ($m) {
-                        $low = mb_strtolower(trim($m));
-                        if ($low === '' || $low === 'model' || $low === 'մոդելը') {
-                            return false;
-                        }
-                        if (preg_match('/^[-\s]{3,}$/', $m)) {
-                            return false;
-                        }
-                        return true;
-                    }));
+            $clean = array_values(array_unique(array_filter($models)));
+            $clean = array_values(array_filter($clean, function ($m) {
+                $low = mb_strtolower(trim($m));
+                if ($low === '' || $low === 'model' || $low === 'մոդելը') {
+                    return false;
+                }
+                if (preg_match('/^[-\s]{3,}$/', $m)) {
+                    return false;
+                }
+                return true;
+            }));
 
-                    if (!empty($clean)) {
-                       array_shift($clean);
-                    }
-                    $result[$makeName] = $clean;
+            if (!empty($clean)) {
+                array_shift($clean);
+            }
+
+            $result[$makeName] = $clean;
         }
+
         return $result;
     }
 

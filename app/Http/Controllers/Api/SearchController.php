@@ -205,8 +205,8 @@ class SearchController extends Controller
             $query->where('listings.description', 'LIKE', "%{$validated['keyword']}%");
         }
 
-        if (isset($validated['exchange'])) {
-            $query->where('listings.exchange', (bool) $validated['exchange']);
+        if (isset($validated['exchange']) && (bool) $validated['exchange'] == 0) {
+            $query->where('listings.exchange', '=', (bool) $validated['exchange']);
         }
 
 
@@ -305,7 +305,7 @@ class SearchController extends Controller
      */
     public function listings(Request $request, $lang)
     {
-        $perPage = $request->integer('per_page', 20);
+        $perPage = $request->integer('per_page', 18);
 
         $query = Listing::query()
             ->select([

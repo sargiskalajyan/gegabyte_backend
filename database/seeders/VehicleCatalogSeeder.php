@@ -33,15 +33,41 @@ class VehicleCatalogSeeder extends Seeder
                     'en' => 'Cars',
                     'ru' => 'Авто',
                 ],
+
+                'trucks' => [
+                    'hy' => 'Բեռնատարներ',
+                    'en' => 'Trucks',
+                    'ru' => 'Грузовики',
+                ],
+
                 'motorcycles' => [
                     'hy' => 'Մոտոցիկլներ',
                     'en' => 'Motorcycles',
                     'ru' => 'Мотоциклы',
                 ],
-                'trucks' => [
-                    'hy' => 'Բեռնատարներ',
-                    'en' => 'Trucks',
-                    'ru' => 'Грузовики',
+
+                'special_vehicles' => [
+                    'hy' => 'Հատուկ տրանսպորտային միջոցներ',
+                    'en' => 'Special vehicles',
+                    'ru' => 'Специальные транспортные средства',
+                ],
+
+                'buses' => [
+                    'hy' => 'Ավտոբուսներ',
+                    'en' => 'Buses',
+                    'ru' => 'Автобусы',
+                ],
+
+                'trailers' => [
+                    'hy' => 'Կցասայլեր',
+                    'en' => 'Trailers',
+                    'ru' => 'Прицепы',
+                ],
+
+                'water_vehicles' => [
+                    'hy' => 'Ջրային տրանսպորտային միջոցներ',
+                    'en' => 'Water vehicles',
+                    'ru' => 'Водные транспортные средства',
                 ],
             ];
 
@@ -60,33 +86,56 @@ class VehicleCatalogSeeder extends Seeder
                 $categoryIds[$key] = $categoryId;
             }
 
-            // Dynamically Fetch Makes and Models for Cars
-            $makesAndModels = $vehicleService->getMakesAndModels();
+            // Map local category keys to auto.am category IDs
+            $autoCategoryMap = [
+                'cars' => 1, // passenger-cars
+                'trucks' => 5,
+                'motorcycles' => 2,
+                'special_vehicles' => 6,
+                'buses' => 4,
+                'trailers' => 30,
+                'water_vehicles' => 25,
+            ];
 
-            foreach ($makesAndModels as $make => $models) {
-                $makeId = DB::table('makes')->insertGetId([
-                    'category_id' => $categoryIds['cars'],
-                ]);
 
-                foreach ($languages as $code => $langId) {
-                    DB::table('make_translations')->insert([
-                        'make_id'     => $makeId,
-                        'language_id' => $langId,
-                        'name'        => $make,
-                    ]);
+
+            // For each created category, fetch makes/models from auto.am (by auto category id)
+            foreach ($categoryIds as $key => $appCategoryId) {
+                $autoId = $autoCategoryMap[$key] ?? null;
+                if (empty($autoId)) {
+                    continue;
                 }
 
-                foreach ($models as $modelName) {
-                    $modelId = DB::table('car_models')->insertGetId([
-                        'make_id' => $makeId,
+                $makesAndModels = $vehicleService->getMakesAndModelsFromAutoAm($autoId);
+                if (empty($makesAndModels)) {
+                    continue;
+                }
+
+                foreach ($makesAndModels as $make => $models) {
+                    $makeId = DB::table('makes')->insertGetId([
+                        'category_id' => $appCategoryId,
                     ]);
 
                     foreach ($languages as $code => $langId) {
-                        DB::table('car_model_translations')->insert([
-                            'car_model_id' => $modelId,
-                            'language_id'  => $langId,
-                            'name'         => $modelName,
+                        DB::table('make_translations')->insert([
+                            'make_id'     => $makeId,
+                            'language_id' => $langId,
+                            'name'        => $make,
                         ]);
+                    }
+
+                    foreach ($models as $modelName) {
+                        $modelId = DB::table('car_models')->insertGetId([
+                            'make_id' => $makeId,
+                        ]);
+
+                        foreach ($languages as $code => $langId) {
+                            DB::table('car_model_translations')->insert([
+                                'car_model_id' => $modelId,
+                                'language_id'  => $langId,
+                                'name'         => $modelName,
+                            ]);
+                        }
                     }
                 }
             }
