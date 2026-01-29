@@ -104,7 +104,7 @@
 
                             {{-- car_models make --}}
                         @elseif($type === 'car_models' && $field === 'make_id')
-                            <select class="form-control" wire:model.defer="form.base.make_id">
+                            <select class="form-control @error('form.base.make_id') is-invalid @enderror" wire:model.defer="form.base.make_id">
                                 <option value="">{{ __('translations.select_item') }}</option>
                                 @foreach($relatedItems as $item)
                                     <option value="{{ $item->id }}">
@@ -112,10 +112,13 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('form.base.make_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
 
                             {{-- makes category --}}
                         @elseif($type === 'makes' && $field === 'category_id')
-                            <select class="form-control" wire:model.defer="form.base.category_id">
+                            <select class="form-control @error('form.base.category_id') is-invalid @enderror" wire:model.defer="form.base.category_id">
                                 <option value="">{{ __('translations.select_item') }}</option>
                                 @foreach($relatedItems as $item)
                                     <option value="{{ $item->id }}">
@@ -123,6 +126,9 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('form.base.category_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
 
                         @else
                             <input type="text"

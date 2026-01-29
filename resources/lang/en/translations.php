@@ -22,6 +22,8 @@ return [
     'error_title'  => 'Error',
     'validation' => [
         'at_least_one' => 'At least one translation is required.',
+        'required' => 'This field is required.',
+        'error' => 'Validation error',
     ],
 
     'saved_title'   => 'Saved',

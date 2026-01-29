@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class TranslationsTable extends Component
 {
@@ -43,6 +44,10 @@ class TranslationsTable extends Component
         foreach ($this->config['base_fields'] ?? [] as $field) {
             if ($this->type === 'categories' && $field === 'image_url') {
                 $rules["form.base.image_url"] = 'nullable|image|max:2048';
+            } elseif ($this->type === 'car_models' && $field === 'make_id') {
+                $rules["form.base.{$field}"] = 'required|integer|exists:makes,id';
+            } elseif ($this->type === 'makes' && $field === 'category_id') {
+                $rules["form.base.{$field}"] = 'required|integer|exists:categories,id';
             } else {
                 $rules["form.base.{$field}"] = 'nullable';
             }
@@ -199,7 +204,25 @@ class TranslationsTable extends Component
             return;
         }
 
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $errors = $e->validator->errors();
+            if ($errors->has('form.base.make_id')) {
+                $message = __('translations.fields.make_id') . ': ' . __('translations.validation.required');
+            } elseif ($errors->has('form.base.category_id')) {
+                $message = __('translations.fields.category_id') . ': ' . __('translations.validation.required');
+            } else {
+                $message = $errors->first() ?? __('translations.validation.error');
+            }
+
+            $this->dispatch('show-admin-toast',
+                title: __('translations.error_title'),
+                message: $message,
+                icon: 'error'
+            );
+            return;
+        }
 
         DB::transaction(function () {
 

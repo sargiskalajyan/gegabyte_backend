@@ -80,6 +80,11 @@ class AuthController extends Controller
 
         $credentials = $request->validated();
 
+        $user = User::where('email', $credentials['email'] ?? null)->first();
+        if ($user && ! $user->email_verified_at) {
+            return response()->json(['message' => __('auth.email_not_verified')], 404);
+        }
+
         if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['message' => __('auth.failed')], 403);
         }
