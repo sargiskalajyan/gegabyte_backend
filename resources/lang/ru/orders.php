@@ -6,6 +6,7 @@ return [
     'id' => 'ID',
     'user' => 'Пользователь',
     'package' => 'Пакет',
+    'advertisement' => 'Реклама',
     'amount' => 'Сумма',
     'gateway' => 'Платёжная система',
     'status' => 'Статус',

@@ -50,6 +50,7 @@ return [
         'interior_materials' => 'Материалы интерьера',
         'steering_wheels' => 'Рулевые колеса',
         'packages'        => 'Пакеты',
+        'advertisements'  => 'Рекламные пакеты',
     ],
 
     'fields' => [

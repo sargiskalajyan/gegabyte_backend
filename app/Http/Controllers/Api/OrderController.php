@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Advertisement;
+use App\Models\Listing;
 use App\Models\Order;
 use App\Models\UserPackage;
 use App\Models\Package;
@@ -13,7 +15,6 @@ use Carbon\Carbon;
 
 class OrderController extends Controller
 {
-
 
     /**
      * @param Request $request
@@ -58,24 +59,50 @@ class OrderController extends Controller
                 $user = $order->user;
                 $package = $order->package;
 
-                if (! $package) {
-                    Log::error('Paid order has no package', ['order_id' => $order->id]);
-                    return;
+                if ($package) {
+                    $user->packages()->where('status', 'active')->update(['status' => 'expired']);
+
+                    UserPackage::create([
+                        'user_id' => $user->id,
+                        'package_id' => $package->id,
+                        'starts_at' => now(),
+                        'expires_at' => $package->duration_days
+                            ? now()->addDays($package->duration_days)
+                            : null,
+                        'used_active_listings' => 0,
+                        'used_featured_days' => 0,
+                        'status' => 'active'
+                    ]);
+                } else {
+                    // Handle advertisement orders (payload expected to contain advertisement_id and listing_id)
+                        // Try to detect advertisement from order record first, then from webhook payload
+                        $payload = $payload ?? [];
+                        $adId = $order->advertisement_id ?? ($payload['advertisement_id'] ?? null);
+                        $listingId = $payload['listing_id'] ?? ($order->payload['listing_id'] ?? null);
+
+                        if ($adId && $listingId) {
+                            $ad = Advertisement::find($adId);
+                            $listing = Listing::find($listingId);
+
+                            if ($ad && $listing) {
+                                $starts = now();
+                                $expires = $ad->duration_days ? $starts->copy()->addDays($ad->duration_days) : null;
+
+                                // ensure order.advertisement_id is set
+                                if (! $order->advertisement_id) {
+                                    $order->advertisement_id = $ad->id;
+                                    $order->save();
+                                }
+
+                                // mark listing as top
+                                $listing->is_top = true;
+                                $listing->top_expires_at = $expires;
+                                $listing->save();
+                            }
+                        } else {
+                            Log::error('Paid order has no package and is not advertisement', ['order_id' => $order->id, 'payload' => $payload]);
+                        }
                 }
-
-                $user->packages()->where('status', 'active')->update(['status' => 'expired']);
-
-                UserPackage::create([
-                    'user_id' => $user->id,
-                    'package_id' => $package->id,
-                    'starts_at' => now(),
-                    'expires_at' => $package->duration_days
-                        ? now()->addDays($package->duration_days)
-                        : null,
-                    'used_active_listings' => 0,
-                    'used_featured_days' => 0,
-                    'status' => 'active'
-                ]);
             });
 
             return response(__('payments.payment_success'), 200);
@@ -142,7 +169,7 @@ class OrderController extends Controller
         $perPage = max(1, min(100, $perPage));
 
         $orders = Order::where('user_id', $user->id)
-            ->with(['package.translations', 'package.translation'])
+            ->with(['package.translations', 'package.translation', 'advertisement.translations', 'advertisement.translation'])
             ->orderByDesc('created_at')
             ->paginate($perPage);
 
@@ -157,11 +184,17 @@ class OrderController extends Controller
                 'description' => $order->description,
                 'created_at' => $order->created_at,
                 'package' => $order->package ? [
-                    'id' => $order->package->id,
-                    'price' => $order->package->price,
-                    'duration_days' => $order->package->duration_days,
-                    'name' => $order->package->name,
-                ] : null,
+                        'id' => $order->package->id,
+                        'price' => $order->package->price,
+                        'duration_days' => $order->package->duration_days,
+                        'name' => $order->package->name,
+                    ] : null,
+                'advertisement' => $order->advertisement ? [
+                        'id' => $order->advertisement->id,
+                        'price' => $order->advertisement->price,
+                        'duration_days' => $order->advertisement->duration_days,
+                        'name' => $order->advertisement->name,
+                    ] : null,
             ];
         });
 

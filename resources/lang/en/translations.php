@@ -50,6 +50,7 @@ return [
         'interior_materials' => 'Interior Materials',
         'steering_wheels' => 'Steering Wheels',
         'packages'        => 'Packages',
+        'advertisements'  => 'Advertisements',
     ],
 
     'fields' => [

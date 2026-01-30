@@ -18,6 +18,7 @@
                         <th>{{ __('orders.id') }}</th>
                         <th>{{ __('orders.user') }}</th>
                         <th>{{ __('orders.package') }}</th>
+                        <th>{{ __('orders.advertisement') }}</th>
                         <th>{{ __('orders.amount') }}</th>
                         <th>{{ __('orders.gateway') }}</th>
                         <th>{{ __('orders.status') }}</th>
@@ -38,6 +39,10 @@
 
                             <td>
                                 {{ $order->package->name ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $order->advertisement?->name ?? '-' }}
                             </td>
 
                             <td>

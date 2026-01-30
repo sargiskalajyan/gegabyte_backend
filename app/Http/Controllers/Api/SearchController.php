@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListingSearchRequest;
 use App\Http\Resources\ListingResource;
+use App\Models\Advertisement;
 use App\Models\CarModel;
 use App\Models\Category;
 use App\Models\Color;
@@ -283,6 +284,7 @@ class SearchController extends Controller
                 'engine_sizes'  => EngineSize::with('translation')->get(),
                 'engines'       => Engine::with('translation')->get(),
                 'packages'      => Package::with('translation')->get(),
+                'advertisements'=> Advertisement::with('translation')->where('is_active', true)->orderBy('price')->get(),
                 'languages'     => Language::all(),
                 'years'         => range(date('Y'), 1980),
 

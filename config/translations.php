@@ -177,4 +177,13 @@ return [
         'base_fields'       => ['key', 'price', 'duration_days', 'max_active_listings',  'included_featured_days', 'top_listings_count',  'is_active'],
     ],
 
+
+    'advertisements' => [
+        'base_table'        => 'advertisements',
+        'translation_table' => 'advertisement_translations',
+        'foreign_key'       => 'advertisement_id',
+        'fields'            => ['name'],
+        'base_fields'       => ['key', 'price', 'duration_days', 'is_active'],
+    ],
+
 ];

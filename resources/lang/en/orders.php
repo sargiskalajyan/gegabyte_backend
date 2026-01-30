@@ -6,6 +6,7 @@ return [
     'id' => 'ID',
     'user' => 'User',
     'package' => 'Package',
+    'advertisement' => 'Advertisement',
     'amount' => 'Amount',
     'gateway' => 'Gateway',
     'status' => 'Status',

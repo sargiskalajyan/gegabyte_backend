@@ -14,7 +14,7 @@ class OrdersTable extends Component
 
     public function render()
     {
-        $orders = Order::with(['user', 'package'])
+        $orders = Order::with(['user', 'package', 'advertisement'])
             ->latest()
             ->paginate(10);
 

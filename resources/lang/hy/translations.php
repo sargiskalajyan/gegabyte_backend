@@ -50,6 +50,7 @@ return [
         'interior_materials' => 'Սրահի նյութեր',
         'steering_wheels' => 'Ղեկեր',
         'packages'        => 'Փաթեթներ',
+        'advertisements'  => 'Գովազդի փաթեթներ',
     ],
 
     'fields' => [

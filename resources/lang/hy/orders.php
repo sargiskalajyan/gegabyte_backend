@@ -6,6 +6,7 @@ return [
     'id' => 'ID',
     'user' => 'Օգտատեր',
     'package' => 'Փաթեթ',
+    'advertisement' => 'Գովազդ',
     'amount' => 'Գումար',
     'gateway' => 'Վճարման համակարգ',
     'status' => 'Կարգավիճակ',

@@ -41,10 +41,11 @@ class DatabaseSeeder extends Seeder
             InteriorColorSeeder::class,
             InteriorMaterialSeeder::class,
             SteeringWheelSeeder::class,
+            AdvertisementSeeder::class,
         ]);
 
 
 
-//        php artisan db:seed --class=VehicleCatalogContinueSeeder
+//        php artisan db:seed --class=AdvertisementSeeder
     }
 }

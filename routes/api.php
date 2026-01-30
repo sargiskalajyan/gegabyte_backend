@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdvertisementController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\OrderController;
@@ -58,12 +59,12 @@ Route::group([
     });
 
 
-    
+
     Route::group(['prefix' => 'filters'], function () {
         Route::get('/categories', [FiltersController::class, 'categories']);
         Route::get('/packages', [FiltersController::class, 'packages']);
     });
-    
+
 
 
     Route::group(['prefix' => 'users'], function () {
@@ -94,8 +95,8 @@ Route::group([
         });
 
         Route::post('packages/{package}/buy', [PackageController::class, 'buy']);
+        Route::post('advertisements/{advertisement}/buy', [AdvertisementController::class, 'buy']);
         Route::get('payments/{order}/status', [OrderController::class, 'status']);
-        // Authenticated user's payment history (paginated, localized)
         Route::get('payments/history', [OrderController::class, 'history']);
     });
 });

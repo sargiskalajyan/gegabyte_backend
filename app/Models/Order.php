@@ -21,6 +21,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'package_id',
+        'advertisement_id',
         'amount',
         'gateway',
         'status',
@@ -54,6 +55,12 @@ class Order extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+
+    public function advertisement()
+    {
+        return $this->belongsTo(Advertisement::class);
     }
 
 
