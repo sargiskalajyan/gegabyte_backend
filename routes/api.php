@@ -63,9 +63,8 @@ Route::group([
     Route::group(['prefix' => 'filters'], function () {
         Route::get('/categories', [FiltersController::class, 'categories']);
         Route::get('/packages', [FiltersController::class, 'packages']);
+        Route::get('/advertisements', [FiltersController::class, 'advertisements']);
     });
-
-
 
     Route::group(['prefix' => 'users'], function () {
         Route::get('/{user}', [UserController::class, 'show']);

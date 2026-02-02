@@ -56,6 +56,10 @@ class TranslationsTable extends Component
         return $rules;
     }
 
+
+    /**
+     * @return void
+     */
     private function forgetFiltersCache(): void
     {
         try {
@@ -66,6 +70,7 @@ class TranslationsTable extends Component
                     Cache::forget("filters_{$code}");
                     Cache::forget("filters_{$code}_categories");
                     Cache::forget("filters_{$code}_packages");
+                    Cache::forget("filters_{$code}_advertisements");
                 }
             }
         } catch (\Throwable $e) {
