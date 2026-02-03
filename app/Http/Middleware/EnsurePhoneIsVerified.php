@@ -12,13 +12,13 @@ class EnsurePhoneIsVerified
      */
     public function handle(Request $request, Closure $next)
     {
-//        $user = auth('api')->user();
-//
-//        if (!$user || !$user->phone_number_verified_at) {
-//            return response()->json([
-//                'message' => __('auth.phone_not_verified'),
-//            ], 403);
-//        }
+        $user = auth('api')->user();
+
+        if (!$user || !$user->phone_number_verified_at) {
+            return response()->json([
+                'message' => __('auth.phone_not_verified'),
+            ], 403);
+        }
 
         return $next($request);
     }

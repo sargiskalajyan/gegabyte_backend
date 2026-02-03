@@ -35,7 +35,6 @@ Route::group([
     'prefix' => '{lang}',
     'middleware' => 'set.api.locale'
 ], function () {
-    Route::post('/test', [PhoneVerificationController::class, 'testSendCode']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login',    [AuthController::class, 'login']);
 
@@ -84,7 +83,7 @@ Route::group([
         Route::get('user/package-stats', [UserPackageController::class, 'getPackageStats']);
 
         Route::group(['prefix' => 'phone'], function () {
-            Route::post('/request', [PhoneVerificationController::class, 'requestCode']);
+            Route::post('/resend', [PhoneVerificationController::class, 'requestCode']);
             Route::post('/verify', [PhoneVerificationController::class, 'verifyCode']);
         });
 

@@ -22,7 +22,7 @@ class SmsService
         $url = 'https://www.mobipace.com/API_2_0/HTTP_API.aspx?function=send'
             . '&username=' . urlencode(env('MOBIPACE_USER'))
             . '&password=' . urlencode(env('MOBIPACE_PASS'))
-            . '&sender=' . env('APP_NAME')
+            . '&sender=WorkNet.am'
             . '&recipient=' . $phone
             . '&body=' . $body;
 

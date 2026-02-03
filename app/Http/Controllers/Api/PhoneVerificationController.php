@@ -38,6 +38,11 @@ class PhoneVerificationController extends Controller
         Cache::put("pending_phone_{$user->id}", $phone, now()->addMinutes(5));
         Cache::put("phone_verify_{$user->id}", $code, now()->addMinutes(5));
 
+        if ($user->phone_number && $user->phone_number_verified_at) {
+            $user->phone_number_verified_at = null;
+            $user->save();
+        }
+
         $smsService->sendSms($phone, __('auth.phone_sms_code', ['code' => $code]));
 
         return response()->json([
@@ -89,29 +94,4 @@ class PhoneVerificationController extends Controller
         ]);
     }
 
-    /**
-     * Test SMS code sending
-     */
-    public function testSendCode(Request $request, $lang, SmsService $smsService)
-    {
-        $langModel = Language::where('code', $lang)->first();
-        if ($langModel) {
-            app()->setLocale($langModel->code);
-        }
-
-        $request->validate([
-            'phone_number' => ['required', 'string'],
-            'code' => ['nullable', 'digits:6'],
-        ]);
-
-        $phone = $request->phone_number;
-        $code = $request->code ?? rand(100000, 999999);
-
-        $smsService->sendSms($phone, __('auth.phone_sms_code', ['code' => $code]));
-
-        return response()->json([
-            'message' => __('auth.phone_code_sent'),
-            'code' => $code,
-        ]);
-    }
 }
