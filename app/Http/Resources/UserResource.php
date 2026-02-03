@@ -20,6 +20,8 @@ class UserResource extends JsonResource
             'email'       => $this->email,
             'phone_number'=> $this->phone_number,
             'language_id' => $this->language_id,
+            'phone_number_verified_at' => $this->phone_number_verified_at,
+            'email_verified_at' => $this->email_verified_at,
             'created_at'  => $this->created_at?->toDateTimeString(),
             'profile_image' => $this->profile_image
                 ? asset('storage/' . $this->profile_image)

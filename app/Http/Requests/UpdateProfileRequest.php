@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UpdateProfileRequest extends FormRequest
@@ -20,17 +19,8 @@ class UpdateProfileRequest extends FormRequest
 
     public function rules(): array
     {
-        $user = $this->user('api'); // authenticated user
-
         return [
             'username' => ['nullable', 'string', 'max:255'],
-
-            'phone_number' => [
-                'nullable',
-                'string',
-                Rule::unique('users', 'phone_number')->ignore($user?->id),
-            ],
-
             'language_id' => ['nullable', 'exists:languages,id'],
 
             'location_id' => ['nullable', 'exists:locations,id'],

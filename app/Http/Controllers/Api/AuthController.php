@@ -12,7 +12,6 @@ use App\Http\Resources\UserResource;
 use App\Models\Language;
 use App\Models\User;
 use App\Notifications\VerifyCodeMail;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -306,11 +305,6 @@ class AuthController extends Controller
 
         $request->validate([
             'username'      => ['nullable', 'string', 'max:255'],
-            'phone_number'  => [
-                'nullable',
-                'string',
-                Rule::unique('users', 'phone_number')->ignore($user->id),
-            ],
             'language_id'   => ['nullable', 'exists:languages,id'],
             'location_id'   => ['nullable', 'exists:locations,id'],
             'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
@@ -330,7 +324,6 @@ class AuthController extends Controller
         // Update other fields
         $user->update([
             'username'     => $request->username ?? $user->username,
-            'phone_number' => $request->phone_number ?? $user->phone_number,
             'language_id'  => $request->language_id ?? $user->language_id,
             'location_id'  => $request->location_id ?? $user->location_id,
         ]);

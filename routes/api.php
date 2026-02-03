@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserPackageController;
 use App\Http\Controllers\Api\VerificationController;
+use App\Http\Controllers\Api\PhoneVerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,7 @@ Route::group([
     'prefix' => '{lang}',
     'middleware' => 'set.api.locale'
 ], function () {
+    Route::post('/test', [PhoneVerificationController::class, 'testSendCode']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login',    [AuthController::class, 'login']);
 
@@ -81,15 +83,23 @@ Route::group([
         Route::get('user',  [AuthController::class, 'user']);
         Route::get('user/package-stats', [UserPackageController::class, 'getPackageStats']);
 
+        Route::group(['prefix' => 'phone'], function () {
+            Route::post('/request', [PhoneVerificationController::class, 'requestCode']);
+            Route::post('/verify', [PhoneVerificationController::class, 'verifyCode']);
+        });
+
         Route::group(['prefix' => 'listings'], function () {
             Route::get('/', [ListingController::class, 'index']);
             Route::get('/{listing}', [ListingController::class, 'show']);
-            Route::post('/', [ListingController::class, 'store']);
-            Route::post('/{listing}', [ListingController::class, 'update']);
-            Route::post('/{listing}/status', [ListingController::class, 'changeStatus']);
-            Route::post('/{listing}/top', [ListingController::class, 'addTop']);
-            Route::delete('/{listing}', [ListingController::class, 'destroy']);
-            Route::delete('/{listing}/photos/{photo}', [ListingController::class, 'deletePhoto']);
+            Route::middleware('phone.verified')->group(function () {
+                Route::post('/', [ListingController::class, 'store']);
+                Route::post('/{listing}/status', [ListingController::class, 'changeStatus']);
+                Route::post('/{listing}/top', [ListingController::class, 'addTop']);
+                Route::post('/{listing}', [ListingController::class, 'update']);
+                Route::delete('/{listing}', [ListingController::class, 'destroy']);
+                Route::delete('/{listing}/photos/{photo}', [ListingController::class, 'deletePhoto']);
+            });
+
 
         });
 

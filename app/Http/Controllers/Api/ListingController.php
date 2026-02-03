@@ -182,6 +182,16 @@ class  ListingController extends Controller
 
             DB::commit();
 
+            // Load relations for response
+            $listing->load(['photos', 'user', 'location', 'category']);
+            $listing->loadTranslationAttributes();
+
+            return response()->json([
+                'message' => __('listings.created_success'),
+                'listing' => new ListingResource($listing),
+            ], 201);
+
+
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -198,15 +208,6 @@ class  ListingController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
-
-        // Load relations for response
-        $listing->load(['photos', 'user', 'location', 'category']);
-        $listing->loadTranslationAttributes();
-
-        return response()->json([
-            'message' => __('listings.created_success'),
-            'listing' => new ListingResource($listing),
-        ], 201);
     }
 
 
@@ -288,6 +289,14 @@ class  ListingController extends Controller
 
             DB::commit();
 
+            $listing->load(['photos', 'user', 'location', 'category']);
+            $listing->loadTranslationAttributes();
+
+            return response()->json([
+                'message' => __('listings.updated'),
+                'listing' => new ListingResource($listing),
+            ]);
+
         } catch (\Exception $e) {
 
             DB::rollBack();
@@ -304,15 +313,6 @@ class  ListingController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
-
-
-        $listing->load(['photos', 'user', 'location', 'category']);
-        $listing->loadTranslationAttributes();
-
-        return response()->json([
-            'message' => __('listings.updated'),
-            'listing' => new ListingResource($listing),
-        ]);
     }
 
 
