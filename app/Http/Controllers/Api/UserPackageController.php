@@ -23,11 +23,7 @@ class UserPackageController extends Controller
             ->where('user_id', $user->id)
             ->count();
 
-        $totalTopUsed = DB::table('listings')
-            ->where('user_id', $user->id)
-            ->where('is_top', true)
-            ->where('top_expires_at', '>', now())
-            ->count();
+        $totalTopUsed = (int) ($user->activePackage()?->used_top_listings ?? 0);
 
         $activePackageRecord = $user->activePackage();
         $active = $activePackageRecord;
@@ -40,10 +36,8 @@ class UserPackageController extends Controller
             : $activePostsUsedFromCounter;
 
         $activeTopSlots = $active->package?->top_listings_count ?? 0;
-        $activeTopUsedFromCounter = $active->used_top_listings ?? null;
-        $activeTopUsed = is_null($activeTopUsedFromCounter) || $activeTopUsedFromCounter === 0
-            ? $totalTopUsed
-            : $activeTopUsedFromCounter;
+        $activeTopUsedFromCounter = $active->used_top_listings ?? 0;
+        $activeTopUsed = (int) $activeTopUsedFromCounter;
 
         $activePackageOutput = [
             'package_id' => $active->package_id ?? null,
