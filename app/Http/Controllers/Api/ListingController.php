@@ -405,14 +405,8 @@ class  ListingController extends Controller
 
         $days = (int)($userPackage->package->included_featured_days ?? 0);
 
-        // If already top and not expired, don't consume another slot.
-        if (
-            $listing->is_top
-            && (
-                is_null($listing->top_expires_at)
-                || $listing->top_expires_at->isFuture()
-            )
-        ) {
+        // If already top, don't consume another slot.
+        if ($listing->is_top) {
             return response()->json(['message' => __('listings.already_top') ?? 'Listing already top'], 200);
         }
 
@@ -425,8 +419,6 @@ class  ListingController extends Controller
         }
 
 
-
-
         try {
             DB::transaction(function () use ($user, $userPackage, $listing, $days) {
                 $lockedPackage = $user->packages()
@@ -434,21 +426,6 @@ class  ListingController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
                 $lockedPackage->loadMissing('package');
-
-                // If listing was top but expired (not yet cleaned), free its slot first.
-                if (
-                    $listing->is_top
-                    && $listing->top_expires_at
-                    && $listing->top_expires_at->isPast()
-                ) {
-                    $listing->is_top = false;
-                    $listing->top_expires_at = null;
-                    $listing->save();
-
-                    if (($lockedPackage->used_top_listings ?? 0) > 0) {
-                        $lockedPackage->decrement('used_top_listings', 1);
-                    }
-                }
 
                 if ($lockedPackage->remainingTopListings() <= 0) {
                     throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([

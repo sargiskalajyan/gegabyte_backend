@@ -23,8 +23,6 @@ class UserPackageController extends Controller
             ->where('user_id', $user->id)
             ->count();
 
-        $totalTopUsed = (int) ($user->activePackage()?->used_top_listings ?? 0);
-
         $activePackageRecord = $user->activePackage();
         $active = $activePackageRecord;
 
