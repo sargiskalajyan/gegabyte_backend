@@ -38,10 +38,6 @@ class PhoneVerificationController extends Controller
         Cache::put("pending_phone_{$user->id}", $phone, now()->addMinutes(5));
         Cache::put("phone_verify_{$user->id}", $code, now()->addMinutes(5));
 
-        if ($user->phone_number && $user->phone_number_verified_at) {
-            $user->phone_number_verified_at = null;
-            $user->save();
-        }
 
         $smsService->sendSms($phone, __('auth.phone_sms_code', ['code' => $code]));
 
