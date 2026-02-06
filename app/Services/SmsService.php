@@ -22,7 +22,7 @@ class SmsService
         $url = 'https://www.mobipace.com/API_2_0/HTTP_API.aspx?function=send'
             . '&username=' . urlencode(env('MOBIPACE_USER'))
             . '&password=' . urlencode(env('MOBIPACE_PASS'))
-            . '&sender=CC%20AGENCY'
+            . '&sender=' . env('MOBIPACE_SENDER')
             . '&recipient=' . $phone
             . '&body=' . $body;
 
