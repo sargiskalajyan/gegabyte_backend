@@ -21,6 +21,11 @@ class UserPackageController extends Controller
 
         $activeCount = DB::table('listings')
             ->where('user_id', $user->id)
+            ->where('status', 'published')
+            ->where(function ($q) {
+                $q->whereNull('published_until')
+                    ->orWhere('published_until', '>', now());
+            })
             ->count();
 
         $activePackageRecord = $user->activePackage();
@@ -44,6 +49,7 @@ class UserPackageController extends Controller
             'posts_limit' => $activePostsLimit ?? null,
             'posts_used' => $activePostsUsed,
             'posts_remaining' => is_null($activePostsLimit) ? null : max(0, ($activePostsLimit ?? 0) - $activePostsUsed),
+            'active_posts_count' => $activeCount,
             'top_slots' => $activeTopSlots,
             'top_used' => $activeTopUsed,
             'top_remaining' => max(0, ($activeTopSlots ?? 0) - $activeTopUsed),
