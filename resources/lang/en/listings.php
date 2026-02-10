@@ -22,6 +22,7 @@ return [
     'description' => 'Description',
     'price' => 'Price',
     'user' => 'User',
+    'user_id' => 'User ID',
     'status' => 'Status',
     'change' => 'Change',
     'gallery' => 'Gallery',

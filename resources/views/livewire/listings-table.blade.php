@@ -20,6 +20,7 @@
                         <th>{{ __('listings.make_model') }}</th>
                         <th>{{ __('listings.description') }}</th>
                         <th>{{ __('listings.price') }}</th>
+                        <th>{{ __('listings.user_id') }}</th>
                         <th>{{ __('listings.user') }}</th>
                         <th>{{ __('listings.status') }}</th>
                         <th>{{ __('listings.change') }}</th>
@@ -49,7 +50,7 @@
                             </td>
 
                             <td>${{ number_format($listing->price,2) }}</td>
-
+                            <td>{{ $listing->user->id ?? '-' }}</td>
                             <td>{{ $listing->user->username ?? '-' }}</td>
 
                             <td>
