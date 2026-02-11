@@ -202,8 +202,18 @@ class SearchController extends Controller
             $query->where('listings.year', '<=', $validated['year_to']);
         }
 
+//        if (!empty($validated['keyword'])) {
+//            $query->where('listings.description', 'LIKE', "%{$validated['keyword']}%");
+//        }
+
+
         if (!empty($validated['keyword'])) {
-            $query->where('listings.description', 'LIKE', "%{$validated['keyword']}%");
+            $keyword = $validated['keyword'];
+            $query->where(function ($q) use ($keyword) {
+                $q->where('listings.description', 'LIKE', "%{$keyword}%")
+                    ->orWhere('model_trans.name', 'LIKE', "%{$keyword}%")
+                    ->orWhere('make_trans.name', 'LIKE', "%{$keyword}%");
+            });
         }
 
         if (isset($validated['exchange']) && (bool) $validated['exchange'] == 0) {
