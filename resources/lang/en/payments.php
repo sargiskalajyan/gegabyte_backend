@@ -10,4 +10,5 @@ return [
     'package_found'     => 'Package not found or inactive',
     'order_created'     => 'Order created successfully',
     'history'           => 'Payment history',
+    'active_package_exists' => 'You already have an active package',
 ];

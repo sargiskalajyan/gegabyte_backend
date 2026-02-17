@@ -59,8 +59,6 @@ Route::group([
         Route::get('/listing/{id}',  [SearchController::class, 'show']);
     });
 
-
-
     Route::group(['prefix' => 'filters'], function () {
         Route::get('/categories', [FiltersController::class, 'categories']);
         Route::get('/packages', [FiltersController::class, 'packages']);
@@ -73,6 +71,8 @@ Route::group([
     });
 
     Route::post('payments/webhook/{gateway}', [OrderController::class, 'webhook']);
+
+    Route::get('/payments/ameria/callback', [OrderController::class, 'ameriaCallback'])->name('ameria.callback');
 
     Route::middleware('auth:api')->group(function () {
         Route::post('refresh',  [AuthController::class, 'refresh']);

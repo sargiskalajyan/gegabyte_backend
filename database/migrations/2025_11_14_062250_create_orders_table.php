@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('package_id')->nullable()->constrained('packages');
             $table->unsignedInteger('amount');
-            $table->enum('gateway', ['evoca', 'arca', 'idram', 'other']);
+            $table->enum('gateway', ['evoca', 'arca', 'idram', 'ameria', 'other']);
             $table->enum('status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
             $table->uuid('idempotency_key')->nullable()->unique();
             $table->string('reference')->nullable(); // Bank/Idram transaction number

@@ -8,10 +8,10 @@ use App\Models\Listing;
 use App\Models\Order;
 use App\Models\UserPackage;
 use App\Models\Package;
+use App\Services\Payments\AmeriaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -117,6 +117,142 @@ class OrderController extends Controller
     }
 
 
+    /**
+     * @param Request $request
+     * @param $lang
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function ameriaCallback(Request $request, $lang)
+    {
+        $orderId   = $request->orderID;
+        $paymentId = $request->paymentID;
+
+        $frontend = rtrim(config('app.frontend_url'), '/');
+        $isTestMode = (bool) config('services.ameria.test_mode');
+
+        $order = Order::find($orderId);
+
+        if (! $order && $isTestMode && $paymentId) {
+            $order = Order::where('reference', $paymentId)->first();
+        }
+
+        if (! $order) {
+            Log::warning('Ameria callback order not found', [
+                'order_id' => $orderId,
+                'payment_id' => $paymentId,
+                'test_mode' => $isTestMode,
+            ]);
+
+            return redirect("{$frontend}/{$lang}/payment-failed");
+        }
+
+        $ameria = new AmeriaService();
+        $details = $ameria->getPaymentDetails($paymentId);
+
+        $opaqueData = [];
+        if (! empty($details['Opaque'])) {
+            $decodedOpaque = json_decode($details['Opaque'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $opaqueData = $decodedOpaque;
+            } else {
+                Log::warning('Ameria callback opaque parsing failed', [
+                    'payment_id' => $paymentId,
+                    'opaque' => $details['Opaque'],
+                ]);
+            }
+        }
+
+        if (($details['ResponseCode'] ?? null) === "00"
+            && ($details['OrderStatus'] ?? null) == 2) {
+
+            DB::transaction(function () use ($order, $details, $opaqueData) {
+
+                $payload = $order->payload ?? [];
+
+                if (! isset($payload['listing_id']) && isset($opaqueData['listing_id'])) {
+                    $payload['listing_id'] = $opaqueData['listing_id'];
+                }
+
+                if (! isset($payload['advertisement_id']) && isset($opaqueData['advertisement_id'])) {
+                    $payload['advertisement_id'] = $opaqueData['advertisement_id'];
+                }
+
+                $payload['ameria_details'] = $details;
+
+                if (! $order->advertisement_id && isset($payload['advertisement_id'])) {
+                    $order->advertisement_id = $payload['advertisement_id'];
+                }
+
+                $order->status = 'paid';
+                $order->payload = $payload;
+                $order->save();
+
+                $order->load('package', 'advertisement', 'user');
+
+                // Package activation
+                if ($order->package) {
+                    $user = $order->user;
+                    $package = $order->package;
+
+                    $user->packages()->where('status','active')
+                        ->update(['status'=>'expired']);
+
+                    UserPackage::create([
+                        'user_id'    => $user->id,
+                        'package_id' => $package->id,
+                        'starts_at'  => now(),
+                        'expires_at' => $package->duration_days
+                            ? now()->addDays($package->duration_days)
+                            : null,
+                        'status'     => 'active'
+                    ]);
+                }
+
+                // Advertisement activation
+                if ($order->advertisement) {
+
+                    $listingId = $payload['listing_id'] ?? ($opaqueData['listing_id'] ?? null);
+
+                    if (! $listingId) {
+                        Log::warning('Advertisement order missing listing reference', [
+                            'order_id' => $order->id,
+                        ]);
+                        return;
+                    }
+
+                    $listing = Listing::find($listingId);
+
+                    if (! $listing) {
+                        Log::warning('Listing not found for advertisement order', [
+                            'order_id' => $order->id,
+                            'listing_id' => $listingId,
+                        ]);
+                        return;
+                    }
+
+                    $expires = $order->advertisement->duration_days
+                        ? now()->addDays($order->advertisement->duration_days)
+                        : null;
+
+                    $listing->update([
+                        'is_top'        => true,
+                        'top_expires_at'=> $expires
+                    ]);
+                }
+            });
+            return redirect("{$frontend}/{$lang}/payment-success");
+        }
+
+        $order->update([
+            'status' => 'failed',
+            'payload'=> $details
+        ]);
+
+        return redirect("{$frontend}/{$lang}/payment-failed");
+    }
+
+
+
 
     /**
      * @param Request $request
@@ -128,6 +264,8 @@ class OrderController extends Controller
         // Implement HMAC or provider verification here.
         // For now return true for dev; change before production.
         return true;
+
+
     }
 
 

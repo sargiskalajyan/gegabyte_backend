@@ -35,4 +35,12 @@ return [
         'key' => env('SENDGRID_API_KEY'),
     ],
 
+
+    'ameria' => [
+        'client_id' => env('AMERIA_CLIENT_ID'),
+        'username'  => env('AMERIA_USERNAME'),
+        'password'  => env('AMERIA_PASSWORD'),
+        'test_mode' => env('AMERIA_TEST_MODE', true),
+    ],
+
 ];
