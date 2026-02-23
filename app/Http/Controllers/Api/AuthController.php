@@ -64,7 +64,7 @@ class AuthController extends Controller
         // Generate 6-digit verification code
         $code = rand(100000, 999999);
 
-        cache()->put("verify_code_{$user->email}", $code, now()->addSeconds(40));
+        cache()->put("verify_code_{$user->email}", $code, now()->addSeconds(189));
 
         // Send verification email
         $user->notify(new VerifyCodeMail($code));
@@ -170,7 +170,7 @@ class AuthController extends Controller
         $code = rand(100000, 999999);
         $emailCacheKey = $this->normalizeEmail($user->email);
 
-        cache()->put("reset_password_code_{$emailCacheKey}", $code, now()->addSeconds(40));
+        cache()->put("reset_password_code_{$emailCacheKey}", $code, now()->addSeconds(189));
 
         $user->notify(new VerifyCodeMail($code));
 
@@ -215,7 +215,7 @@ class AuthController extends Controller
         cache()->put(
             "reset_password_verified_{$normalizedEmail}",
             true,
-            now()->addSeconds(40)
+            now()->addSeconds(189)
         );
 
         return response()->json([
