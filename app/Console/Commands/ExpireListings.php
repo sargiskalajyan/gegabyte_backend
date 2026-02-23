@@ -3,11 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Models\Listing;
+use App\Models\User;
+use App\Services\SmsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class ExpireListings extends Command
 {
+    private const CHUNK_SIZE = 500;
+
     /**
      * The name and signature of the console command.
      *
@@ -27,74 +31,102 @@ class ExpireListings extends Command
      */
     public function handle()
     {
-//        Listing::where('status', 'published')
-//            ->whereNotNull('published_until')
-//            ->where('published_until', '<=', now()->startOfDay())
-//            ->update([
-//                'status' => 'expired',
-//            ]);
-//
-//        return Command::SUCCESS;
 
+        $now = now();
+        $topExpirations = [];
+        $processedPublished = false;
+        $processedTop = false;
 
-        // Expire published listings (published_until)
-        $toExpire = Listing::where('status', 'published')
+        Listing::with(['user.language'])
+            ->where('status', '=','published')
             ->whereNotNull('published_until')
-            ->where('published_until', '<', now())
-            ->get();
+            ->where('published_until', '<', $now)
+            ->orderBy('id')
+            ->chunkById(self::CHUNK_SIZE, function ($listings) use (&$topExpirations, &$processedPublished) {
+                $processedPublished = true;
+                foreach ($listings as $listing) {
+                    if ($listing->is_top) {
+                        $this->incrementTopUsage($topExpirations, $listing->user_id);
+                        $listing->is_top = false;
+                        $listing->top_expires_at = null;
+                    }
 
-        // Expire top status based on top_expires_at (independent of published status)
-        $topToExpire = Listing::where('is_top', true)
+                    $listing->status = 'expired';
+                    $listing->save();
+
+                    $this->sendExpiredSms($listing);
+                }
+            });
+
+        Listing::with('user.language')
+            ->where('is_top', '=',true)
             ->whereNotNull('top_expires_at')
-            ->where('top_expires_at', '<=', now())
-            ->get();
+            ->where('top_expires_at', '<=', $now)
+            ->orderBy('id')
+            ->chunkById(self::CHUNK_SIZE, function ($listings) use (&$topExpirations, &$processedTop) {
+                $processedTop = true;
+                foreach ($listings as $listing) {
+                    $this->incrementTopUsage($topExpirations, $listing->user_id);
+                    $listing->is_top = false;
+                    $listing->top_expires_at = null;
+                    $listing->save();
+                }
+            });
 
-        if ($toExpire->isEmpty() && $topToExpire->isEmpty()) {
+        if (!$processedPublished && !$processedTop) {
             return Command::SUCCESS;
         }
 
-        // Handle top listings counters per user (from both expiration sources)
-        $topByUser = $toExpire->where('is_top', true)->merge($topToExpire)->groupBy('user_id');
-
-        DB::beginTransaction();
-        try {
-            // For each user, decrement used_top_listings by number of top listings expiring
-            foreach ($topByUser as $userId => $group) {
-                $count = $group->count();
-
-                $userPackage = \App\Models\User::find($userId)?->activePackage();
-                if ($userPackage && $userPackage->exists && ($userPackage->used_top_listings ?? 0) > 0) {
-                    $decrement = min($userPackage->used_top_listings, $count);
-                    $userPackage->decrement('used_top_listings', $decrement);
+        if (!empty($topExpirations)) {
+            DB::beginTransaction();
+            try {
+                foreach ($topExpirations as $userId => $count) {
+                    $userPackage = User::find($userId)?->activePackage();
+                    if ($userPackage && $userPackage->exists && ($userPackage->used_top_listings ?? 0) > 0) {
+                        $decrement = min($userPackage->used_top_listings, $count);
+                        if ($decrement > 0) {
+                            $userPackage->decrement('used_top_listings', $decrement);
+                        }
+                    }
                 }
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                throw $e;
             }
-
-            // Mark listings expired and clear is_top flag
-            foreach ($toExpire as $listing) {
-                $listing->status = 'expired';
-                if ($listing->is_top) {
-                    $listing->is_top = false;
-                    $listing->top_expires_at = null;
-                }
-                $listing->save();
-            }
-
-            // Clear top flag for listings whose top period ended
-            foreach ($topToExpire as $listing) {
-                if ($listing->is_top) {
-                    $listing->is_top = false;
-                }
-                $listing->top_expires_at = null;
-                $listing->save();
-            }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
         }
 
         return Command::SUCCESS;
 
+    }
+
+
+    /**
+     * @param array $topExpirations
+     * @param int $userId
+     * @return void
+     */
+    private function incrementTopUsage(array &$topExpirations, int $userId): void
+    {
+        $topExpirations[$userId] = ($topExpirations[$userId] ?? 0) + 1;
+    }
+
+
+    /**
+     * @param Listing $listing
+     * @return void
+     */
+    private function sendExpiredSms(Listing $listing): void
+    {
+        $user = $listing->user;
+
+        if (!$user || !$user->phone_number || !$user->phone_number_verified_at) {
+            return;
+        }
+
+        $locale = $user->language?->code ?? app()->getLocale() ?? 'hy';
+        $message = trans('listings.sms_expired', [], $locale);
+
+        app(SmsService::class)->sendSms($user->phone_number, $message);
     }
 }

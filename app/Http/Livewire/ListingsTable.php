@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Listing;
 use App\Models\ListingPhoto;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Storage;
 
 class ListingsTable extends Component
@@ -94,7 +95,7 @@ class ListingsTable extends Component
      */
     public function updateStatus($id, $newStatus)
     {
-        $listing = Listing::with('photos')->find($id);
+        $listing = Listing::with(['photos', 'user.language'])->find($id);
         if (!$listing) {
             return;
         }
@@ -115,6 +116,10 @@ class ListingsTable extends Component
         }
 
         $listing->save();
+
+        if ($newStatus === 'published') {
+            $this->sendPublishedSms($listing);
+        }
 
         $image = $listing->photos->first()->thumbnail
             ?? $listing->photos->first()->url
@@ -177,5 +182,21 @@ class ListingsTable extends Component
             ->paginate(10);
 
         return view('livewire.listings-table', compact('listings'));
+    }
+
+
+    private function sendPublishedSms(Listing $listing): void
+    {
+        $phone = $listing->user?->phone_number;
+        $isVerified = $listing->user?->phone_number_verified_at;
+
+        if (!$phone || !$isVerified) {
+            return;
+        }
+
+        $locale = $listing->user?->language?->code ?? app()->getLocale() ?? 'hy';
+        $message = trans('listings.sms_published', [], $locale);
+
+        app(SmsService::class)->sendSms($phone, $message);
     }
 }
