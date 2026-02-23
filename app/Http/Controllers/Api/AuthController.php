@@ -15,6 +15,7 @@ use App\Notifications\VerifyCodeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -29,6 +30,12 @@ class AuthController extends Controller
         $dt2 = now()->addSeconds($seconds);
 
         return $dt1->diff($dt2)->format('%y years %m months %d days %h hours %i minutes %s seconds');
+    }
+
+
+    private function normalizeEmail(string $email): string
+    {
+        return Str::lower(trim($email));
     }
 
 
@@ -57,7 +64,7 @@ class AuthController extends Controller
         // Generate 6-digit verification code
         $code = rand(100000, 999999);
 
-        cache()->put("verify_code_{$user->email}", $code, now()->addMinutes(10));
+        cache()->put("verify_code_{$user->email}", $code, now()->addSeconds(40));
 
         // Send verification email
         $user->notify(new VerifyCodeMail($code));
@@ -161,8 +168,9 @@ class AuthController extends Controller
         }
 
         $code = rand(100000, 999999);
+        $emailCacheKey = $this->normalizeEmail($user->email);
 
-        cache()->put("reset_password_code_{$user->email}", $code, now()->addMinutes(10));
+        cache()->put("reset_password_code_{$emailCacheKey}", $code, now()->addSeconds(40));
 
         $user->notify(new VerifyCodeMail($code));
 
@@ -189,12 +197,13 @@ class AuthController extends Controller
             'code'  => 'required|digits:6',
         ]);
 
-        $cachedCode = cache()->get("reset_password_code_{$request->email}");
+        $normalizedEmail = $this->normalizeEmail($request->email);
+        $cachedCode = cache()->get("reset_password_code_{$normalizedEmail}");
 
         if (!$cachedCode) {
             return response()->json([
-                'message' => __('auth.code_expired'),
-            ], 422);
+                'message' => __('auth.invalid_code'),
+            ], 404);
         }
 
         if ($cachedCode != $request->code) {
@@ -204,9 +213,9 @@ class AuthController extends Controller
         }
 
         cache()->put(
-            "reset_password_verified_{$request->email}",
+            "reset_password_verified_{$normalizedEmail}",
             true,
-            now()->addMinutes(10)
+            now()->addSeconds(40)
         );
 
         return response()->json([
@@ -226,7 +235,8 @@ class AuthController extends Controller
         $langModel = Language::where('code', $lang)->firstOrFail();
         app()->setLocale($langModel->code);
 
-        $verified = cache()->get("reset_password_verified_{$request->email}");
+        $normalizedEmail = $this->normalizeEmail($request->email);
+        $verified = cache()->get("reset_password_verified_{$normalizedEmail}");
 
         if (!$verified) {
             return response()->json([
@@ -240,8 +250,8 @@ class AuthController extends Controller
         $user->save();
 
         // Clean up
-        cache()->forget("reset_password_code_{$request->email}");
-        cache()->forget("reset_password_verified_{$request->email}");
+        cache()->forget("reset_password_code_{$normalizedEmail}");
+        cache()->forget("reset_password_verified_{$normalizedEmail}");
 
         return response()->json([
             'message' => __('auth.password_reset_success'),

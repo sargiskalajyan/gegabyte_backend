@@ -49,12 +49,12 @@ class VerificationController extends Controller
             $attemptsData['count']++;
 
             if ($attemptsData['count'] >= 3) {
-                // Block for 10 minutes
-                $attemptsData['blocked_until'] = now()->addMinutes(10);
+                // Block for 40 seconds
+                $attemptsData['blocked_until'] = now()->addSeconds(40);
                 $attemptsData['count'] = 0; // reset attempts after blocking
             }
 
-            cache()->put($attemptsKey, $attemptsData, $attemptsData['blocked_until'] ?? now()->addMinutes(10));
+            cache()->put($attemptsKey, $attemptsData, $attemptsData['blocked_until'] ?? now()->addSeconds(40));
 
             return response()->json([
                 'message' => __('auth.invalid_code')
@@ -96,7 +96,7 @@ class VerificationController extends Controller
 
         $code = rand(100000, 999999);
 
-        cache()->put("verify_code_{$user->email}", $code, now()->addMinutes(10));
+        cache()->put("verify_code_{$user->email}", $code, now()->addSeconds(40));
 
         $user->notify(new VerifyCodeMail($code));
 

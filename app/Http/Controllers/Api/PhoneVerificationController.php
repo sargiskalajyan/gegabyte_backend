@@ -35,8 +35,8 @@ class PhoneVerificationController extends Controller
         $phone = $request->phone_number;
         $code = rand(100000, 999999);
 
-        Cache::put("pending_phone_{$user->id}", $phone, now()->addMinutes(5));
-        Cache::put("phone_verify_{$user->id}", $code, now()->addMinutes(5));
+        Cache::put("pending_phone_{$user->id}", $phone, now()->addSeconds(40));
+        Cache::put("phone_verify_{$user->id}", $code, now()->addSeconds(40));
 
 
         $smsService->sendSms($phone, __('auth.phone_sms_code', ['code' => $code]));
