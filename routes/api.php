@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdvertisementController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GoogleAuthController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PackageController;
@@ -29,6 +30,12 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
+
+
+Route::group(['prefix' => 'google'], function () {
+    Route::get('/redirect', [GoogleAuthController::class, 'redirectToGoogle']);
+    Route::get('/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+});
 
 
 Route::group([
