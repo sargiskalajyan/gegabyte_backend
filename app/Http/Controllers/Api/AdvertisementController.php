@@ -9,8 +9,8 @@ use App\Models\Order;
 use App\Services\Payments\AmeriaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Http;
 
 class AdvertisementController extends Controller
 {
@@ -79,23 +79,36 @@ class AdvertisementController extends Controller
         // Create order (pending)
         $order = null;
 
-        DB::transaction(function () use ($user, $ad, $listing, $idempotency, &$order) {
+        try {
+            DB::transaction(function () use ($user, $ad, $listing, $idempotency, &$order) {
 
-            $order = Order::create([
-                'user_id'          => $user->id,
-                'package_id'       => null,
-                'advertisement_id' => $ad->id,
-                'amount'           => (int) $ad->price,
-                'currency'         => '051', // ISO for AMD (Ameria)
-                'gateway'          => 'ameria',
-                'status'           => 'pending',
-                'idempotency_key'  => $idempotency,
-                'payload'          => [
+                $order = Order::create([
+                    'user_id'          => $user->id,
+                    'package_id'       => null,
                     'advertisement_id' => $ad->id,
-                    'listing_id'       => $listing->id,
-                ],
+                    'amount'           => (int) $ad->price,
+                    'currency'         => '051', // ISO for AMD (Ameria)
+                    'gateway'          => 'ameria',
+                    'status'           => 'pending',
+                    'idempotency_key'  => $idempotency,
+                    'payload'          => [
+                        'advertisement_id' => $ad->id,
+                        'listing_id'       => $listing->id,
+                    ],
+                ]);
+            });
+        } catch (\Throwable $e) {
+            Log::error('Failed to create advertisement order', [
+                'user_id' => $user->id,
+                'ad_id'   => $ad->id,
+                'listing_id' => $listing->id,
+                'error'   => $e->getMessage(),
             ]);
-        });
+
+            return response()->json([
+                'message' => __('payments.order_failed'),
+            ], 500);
+        }
 
         // Call Ameria InitPayment
         $ameria = new AmeriaService();
@@ -108,16 +121,34 @@ class AdvertisementController extends Controller
             ? 10
             : $order->amount;
 
-        $response = $ameria->initPayment([
-            'amount'      => $amount,
-            'order_id'    => $externalOrderId,
-            'description' => "Advertisement purchase #{$order->id}",
-            'back_url'    => route('ameria.callback', ['lang' => $lang]),
-            'opaque'      => json_encode([
-                'advertisement_id' => $ad->id,
-                'listing_id'       => $listing->id,
-            ])
-        ]);
+        try {
+            $response = $ameria->initPayment([
+                'amount'      => $amount,
+                'order_id'    => $externalOrderId,
+                'description' => "Advertisement purchase #{$order->id}",
+                'back_url'    => route('ameria.callback', ['lang' => $lang]),
+                'opaque'      => json_encode([
+                    'advertisement_id' => $ad->id,
+                    'listing_id'       => $listing->id,
+                ])
+            ]);
+        } catch (\Throwable $e) {
+            $order->update([
+                'status'  => 'failed',
+                'payload' => array_merge($order->payload ?? [], [
+                    'exception' => $e->getMessage(),
+                ]),
+            ]);
+
+            Log::error('Ameria initPayment failed for advertisement order', [
+                'order_id' => $order->id,
+                'error'    => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => __('payments.gateway_unavailable'),
+            ], 502);
+        }
 
         // If Ameria failed to initialize
         if (($response['ResponseCode'] ?? null) != 1) {
