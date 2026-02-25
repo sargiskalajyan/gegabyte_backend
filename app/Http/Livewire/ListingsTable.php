@@ -185,6 +185,10 @@ class ListingsTable extends Component
     }
 
 
+    /**
+     * @param Listing $listing
+     * @return void
+     */
     private function sendPublishedSms(Listing $listing): void
     {
         $phone = $listing->user?->phone_number;
@@ -194,7 +198,7 @@ class ListingsTable extends Component
             return;
         }
 
-        $locale = $listing->user?->language?->code ?? app()->getLocale() ?? 'hy';
+        $locale = 'hy';
         $message = trans('listings.sms_published', [], $locale);
 
         app(SmsService::class)->sendSms($phone, $message);

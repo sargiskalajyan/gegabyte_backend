@@ -124,7 +124,7 @@ class ExpireListings extends Command
             return;
         }
 
-        $locale = $user->language?->code ?? app()->getLocale() ?? 'hy';
+        $locale = 'hy';
         $message = trans('listings.sms_expired', [], $locale);
 
         app(SmsService::class)->sendSms($user->phone_number, $message);
