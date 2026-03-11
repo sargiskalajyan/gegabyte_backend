@@ -12,6 +12,7 @@ use App\Models\Listing;
 use App\Models\ListingPhoto;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -433,9 +434,28 @@ class  ListingController extends Controller
                         'remaining' => 0,
                     ], 403));
                 }
-
                 $listing->is_top = true;
-                $listing->top_expires_at = $days > 0 ? now()->startOfDay()->addDays($days) : null;
+
+                // Calculate desired TOP expiration
+                $listingTopExpiresAt = $days > 0 ? now()->startOfDay()->addDays($days) : null;
+                $listing->top_expires_at = $listingTopExpiresAt;
+
+                // Sync main listing expiration (published_until) with TOP duration:
+                // - If listing expires sooner than TOP duration (e.g. 2 days vs 7),
+                //   extend published_until to match TOP (7 days from now).
+                // - If listing already expires in >= TOP duration (>= 7 days), do NOT change it.
+                if ($days > 0 && $listingTopExpiresAt) {
+                    $minPublishedUntil = $listingTopExpiresAt->copy();
+
+                    $currentPublishedUntil = $listing->published_until
+                        ? Carbon::parse($listing->published_until)->startOfDay()
+                        : null;
+
+                    if (is_null($currentPublishedUntil) || $currentPublishedUntil->lt($minPublishedUntil)) {
+                        $listing->published_until = $minPublishedUntil;
+                    }
+                }
+
                 $listing->save();
 
                 $lockedPackage->increment('used_top_listings');

@@ -10,6 +10,7 @@ use App\Models\UserPackage;
 use App\Models\Package;
 use App\Services\Payments\AmeriaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -94,10 +95,8 @@ class OrderController extends Controller
                                     $order->save();
                                 }
 
-                                // mark listing as top
-                                $listing->is_top = true;
-                                $listing->top_expires_at = $expires;
-                                $listing->save();
+                                // mark listing as top and sync expiration
+                                $this->applyTopToListing($listing, $expires);
                             }
                         } else {
                             Log::error('Paid order has no package and is not advertisement', ['order_id' => $order->id, 'payload' => $payload]);
@@ -234,10 +233,8 @@ class OrderController extends Controller
                         ? now()->addDays($order->advertisement->duration_days)
                         : null;
 
-                    $listing->update([
-                        'is_top'        => true,
-                        'top_expires_at'=> $expires
-                    ]);
+                    // mark listing as top and sync expiration
+                    $this->applyTopToListing($listing, $expires);
                 }
             });
             return redirect("{$frontend}/{$lang}/payment-success");
@@ -340,5 +337,34 @@ class OrderController extends Controller
             'message' => __('payments.history'),
             'data' => $orders
         ]);
+    }
+
+
+    /**
+     * Mark listing as TOP and ensure its published_until is at least the TOP duration.
+     * If listing already expires later than TOP, do not reduce its expiration.
+     *
+     * @param Listing $listing
+     * @param Carbon|null $expires
+     * @return void
+     */
+    protected function applyTopToListing(Listing $listing, ?Carbon $expires): void
+    {
+        $listing->is_top = true;
+        $listing->top_expires_at = $expires;
+
+        if ($expires) {
+            $minPublishedUntil = $expires->copy();
+
+            $currentPublishedUntil = $listing->published_until
+                ? Carbon::parse($listing->published_until)
+                : null;
+
+            if (is_null($currentPublishedUntil) || $currentPublishedUntil->lt($minPublishedUntil)) {
+                $listing->published_until = $minPublishedUntil;
+            }
+        }
+
+        $listing->save();
     }
 }
