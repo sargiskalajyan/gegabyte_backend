@@ -17,6 +17,8 @@ class ListingsTable extends Component
 
     public $statusOptions = ['draft', 'published', 'rejected'];
 
+    public $statusFilterOptions = ['pending', 'published', 'rejected', 'expired'];
+
     public string $search = '';
 
     public $galleryPhotos = [];
@@ -185,7 +187,8 @@ class ListingsTable extends Component
      */
     public function render()
     {
-        $query = Listing::with('photos', 'user');
+        $query = Listing::with('photos', 'user')
+            ->where('status', '!=', 'draft');
 
         $search = trim($this->search);
         if ($search !== '') {
@@ -196,7 +199,7 @@ class ListingsTable extends Component
             $normalizedSearch = mb_strtolower($search);
             $matchedStatus = null;
 
-            foreach ($this->statusOptions as $status) {
+            foreach ($this->statusFilterOptions as $status) {
                 $label = mb_strtolower(__('listings.statuses.' . $status));
 
                 if (str_contains($label, $normalizedSearch)) {
