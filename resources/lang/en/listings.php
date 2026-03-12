@@ -21,6 +21,7 @@ return [
     'make_model' => 'Make/Model',
     'description' => 'Description',
     'price' => 'Price',
+    'updated_at' => 'Updated',
     'user' => 'User',
     'user_id' => 'User ID',
     'status' => 'Status',
@@ -29,6 +30,9 @@ return [
     'delete' => 'Delete',
     'close' => 'Close',
     'just_now' => 'Just now',
+
+    'search' => 'Search listings',
+    'clear_search' => 'Clear search',
 
     'toast_title' => 'Notification',
 

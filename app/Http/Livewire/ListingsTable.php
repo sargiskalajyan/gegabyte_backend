@@ -17,10 +17,18 @@ class ListingsTable extends Component
 
     public $statusOptions = ['draft', 'published', 'rejected'];
 
+    public string $search = '';
+
     public $galleryPhotos = [];
     public $galleryListingId = null;
 
     public $zoomImage = null;
+
+
+    public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
 
 
     /**
@@ -177,7 +185,41 @@ class ListingsTable extends Component
      */
     public function render()
     {
-        $listings = Listing::with('photos','user')
+        $query = Listing::with('photos', 'user');
+
+        $search = trim($this->search);
+        if ($search !== '') {
+            $escaped = addcslashes($search, "\\\\%_");
+            $like = "%{$escaped}%";
+
+            $query->where(function ($q) use ($search, $like) {
+                if (ctype_digit($search)) {
+                    $id = (int) $search;
+
+                    $q->orWhere('id', $id)
+                        ->orWhere('user_id', $id)
+                        ->orWhereHas('user', function ($uq) use ($id) {
+                            $uq->where('id', $id);
+                        });
+                }
+                 $q->orWhere('status', 'like', $like)
+                    // Make name (translated)
+                    ->orWhereHas('make.translations', function ($mq) use ($like) {
+                        $mq->where('name', 'like', $like);
+                    })
+                    // Car model name (translated)
+                    ->orWhereHas('carModel.translations', function ($mq) use ($like) {
+                        $mq->where('name', 'like', $like);
+                    })
+                    ->orWhereHas('user', function ($uq) use ($like) {
+                        $uq->where('username', 'like', $like)
+                            ->orWhere('email', 'like', $like)
+                            ->orWhere('phone_number', 'like', $like);
+                    });
+            });
+        }
+
+        $listings = $query
             ->orderBy('id', 'desc')
             ->paginate(10);
 

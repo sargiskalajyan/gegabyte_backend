@@ -11,6 +11,32 @@
 
         <div class="card-body px-0">
 
+            <div class="px-4 pb-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-5">
+                        <div class="input-group input-group-outline @if(strlen($search ?? '') > 0) is-filled @endif">
+                            <label class="form-label">{{ __('listings.search') }}</label>
+                            <input type="text"
+                                   class="form-control"
+                                   wire:model.live.debounce.300ms="search"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-auto">
+                        @if(!empty($search))
+                            <button class="btn btn-outline-secondary mb-0"
+                                    type="button"
+                                    wire:click="$set('search','')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="search">
+                                {{ __('listings.clear_search') }}
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table align-items-center mb-0 text-center">
                     <thead>
@@ -20,6 +46,7 @@
                         <th>{{ __('listings.make_model') }}</th>
                         <th>{{ __('listings.description') }}</th>
                         <th>{{ __('listings.price') }}</th>
+                        <th>{{ __('listings.updated_at') }}</th>
                         <th>{{ __('listings.user_id') }}</th>
                         <th>{{ __('listings.user') }}</th>
                         <th>{{ __('listings.status') }}</th>
@@ -50,6 +77,7 @@
                             </td>
 
                             <td>${{ number_format($listing->price,2) }}</td>
+                            <td>{{ $listing->updated_at?->diffForHumans() ?? '-' }}</td>
                             <td>{{ $listing->user->id ?? '-' }}</td>
                             <td>{{ $listing->user->username ?? '-' }}</td>
 
