@@ -38,7 +38,7 @@ return [
 
     'statuses' => [
         'draft'     => 'Սևագիր',
-        'pending'   => 'Սպասում է',
+        'pending'   => 'Սպասում',
         'published' => 'Հրապարակված',
         'rejected'  => 'Մերժված',
         'expired'   => 'Ժամկետանց',
