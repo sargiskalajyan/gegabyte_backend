@@ -192,7 +192,20 @@ class ListingsTable extends Component
             $escaped = addcslashes($search, "\\\\%_");
             $like = "%{$escaped}%";
 
-            $query->where(function ($q) use ($search, $like) {
+            // Try to match translated status label (what is shown with __('listings.statuses.*'))
+            $normalizedSearch = mb_strtolower($search);
+            $matchedStatus = null;
+
+            foreach ($this->statusOptions as $status) {
+                $label = mb_strtolower(__('listings.statuses.' . $status));
+
+                if (str_contains($label, $normalizedSearch)) {
+                    $matchedStatus = $status;
+                    break;
+                }
+            }
+
+            $query->where(function ($q) use ($search, $like, $matchedStatus) {
                 if (ctype_digit($search)) {
                     $id = (int) $search;
 
@@ -202,7 +215,13 @@ class ListingsTable extends Component
                             $uq->where('id', $id);
                         });
                 }
-                 $q->orWhere('status', 'like', $like)
+
+                if ($matchedStatus !== null) {
+                    $q->orWhere('status', $matchedStatus);
+                } else {
+                    $q->orWhere('status', 'like', $like);
+                }
+
                     // Make name (translated)
                     ->orWhereHas('make.translations', function ($mq) use ($like) {
                         $mq->where('name', 'like', $like);
