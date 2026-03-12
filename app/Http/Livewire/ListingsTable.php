@@ -222,19 +222,22 @@ class ListingsTable extends Component
                     $q->orWhere('status', 'like', $like);
                 }
 
-                    // Make name (translated)
-                    ->orWhereHas('make.translations', function ($mq) use ($like) {
-                        $mq->where('name', 'like', $like);
-                    })
-                    // Car model name (translated)
-                    ->orWhereHas('carModel.translations', function ($mq) use ($like) {
-                        $mq->where('name', 'like', $like);
-                    })
-                    ->orWhereHas('user', function ($uq) use ($like) {
-                        $uq->where('username', 'like', $like)
-                            ->orWhere('email', 'like', $like)
-                            ->orWhere('phone_number', 'like', $like);
-                    });
+                // Make name (translated)
+                $q->orWhereHas('make.translations', function ($mq) use ($like) {
+                    $mq->where('name', 'like', $like);
+                });
+
+                // Car model name (translated)
+                $q->orWhereHas('carModel.translations', function ($mq) use ($like) {
+                    $mq->where('name', 'like', $like);
+                });
+
+                // User fields
+                $q->orWhereHas('user', function ($uq) use ($like) {
+                    $uq->where('username', 'like', $like)
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('phone_number', 'like', $like);
+                });
             });
         }
 
