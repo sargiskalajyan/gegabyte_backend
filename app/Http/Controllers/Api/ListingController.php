@@ -159,7 +159,7 @@ class  ListingController extends Controller
                 'description' => $request->description,
                 'vin'         => $request->vin,
                 'exchange'    => $request->exchange ?? false,
-                'published_until' => now()->addDays(30)->startOfDay(),
+                'published_until' => now()->addDays(90)->startOfDay(),
             ]);
 
             /**

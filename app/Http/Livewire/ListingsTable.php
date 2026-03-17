@@ -117,7 +117,7 @@ class ListingsTable extends Component
         $listing->status = $newStatus;
 
         if ($newStatus === 'published') {
-            $listing->published_until = now()->addDays(30)->startOfDay();
+            $listing->published_until = now()->addDays(90)->startOfDay();
         }
 
 
