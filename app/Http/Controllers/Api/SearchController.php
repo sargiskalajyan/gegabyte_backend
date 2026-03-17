@@ -225,8 +225,9 @@ class SearchController extends Controller
             $query->where('listings.is_top', (bool) $validated['top']);
         }
 
-        // Order & paginate
-        $query->orderBy('listings.created_at', 'DESC');
+        // Order & paginate: show top listings first, then newest
+        $query->orderByDesc('listings.is_top')
+            ->orderByDesc('listings.created_at');
 
         return ListingResource::collection(
             $query->paginate($validated['per_page'] ?? 20)
