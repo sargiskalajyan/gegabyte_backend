@@ -6,7 +6,7 @@
 
     <div class="card my-4">
         <div class="card-header bg-gradient-primary text-white">
-            <h6 class="mb-0 text-white">{{ __('listings.title') }}</h6>
+            <h6 class="mb-0 text-white">{{ __($pageTitle ?? 'listings.title') }}</h6>
         </div>
 
         <div class="card-body px-0">

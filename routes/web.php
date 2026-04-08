@@ -5,6 +5,7 @@ use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Billing;
 use App\Http\Livewire\ListingsTable;
 use App\Http\Livewire\OrdersTable;
+use App\Http\Livewire\PendingListingsTable;
 use App\Http\Livewire\TranslationsTable;
 use App\Http\Livewire\UsersTable;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,7 @@ Route::get('sign-in', Login::class)->middleware('guest')->name('login');
 Route::group(['middleware' => 'admin'], function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('listings', ListingsTable::class)->name('listings');
+    Route::get('pending-listings', PendingListingsTable::class)->name('pending-listings');
     Route::get('users', UsersTable::class)->name('users');
     Route::get('users/{user}/impersonate', [ImpersonateController::class, 'login'])->name('users.impersonate');
     Route::get('translations', TranslationsTable::class)->name('translations');

@@ -16,6 +16,7 @@ return [
     'not_found' => 'Listing not found.',
 
     'title' => 'Listings',
+    'pending_title' => 'Pending Listings',
     'photos' => 'Photos',
     'id' => 'ID',
     'make_model' => 'Make/Model',

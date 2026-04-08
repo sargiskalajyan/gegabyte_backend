@@ -12,4 +12,5 @@ return [
     'users'         => 'Users',
     'translations'  => 'Translations',
     'orders'        => 'Orders',
+    'pending-listings' => 'Pending listings',
 ];

@@ -15,6 +15,8 @@ class ListingsTable extends Component
 
     protected string $paginationTheme = 'bootstrap';
 
+    public string $pageTitle = 'listings.title';
+
     public $statusOptions = ['draft', 'published', 'rejected'];
 
     public $statusFilterOptions = ['pending', 'published', 'rejected', 'expired'];
@@ -245,10 +247,13 @@ class ListingsTable extends Component
         }
 
         $listings = $query
-            ->orderBy('id', 'desc')
+            ->orderByDesc('updated_at')
             ->paginate(10);
 
-        return view('livewire.listings-table', compact('listings'));
+        return view('livewire.listings-table', [
+            'listings' => $listings,
+            'pageTitle' => $this->pageTitle,
+        ]);
     }
 
 
