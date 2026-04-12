@@ -220,7 +220,7 @@ class  ListingController extends Controller
      * @param ImageService $images
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateOld(ListingUpdateRequest $request, $lang, Listing $listing, ImageService $images)
+    public function update(ListingUpdateRequest $request, $lang, Listing $listing, ImageService $images)
     {
 
         $user = auth('api')->user();
@@ -303,114 +303,6 @@ class  ListingController extends Controller
             DB::rollBack();
 
             // Delete newly created image files
-            foreach ($newFilesSaved as $path) {
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
-                }
-            }
-
-            return response()->json([
-                'message' => __('listings.error_updating'),
-                'error'   => $e->getMessage()
-            ], 500);
-        }
-    }
-
-
-    /**
-     * @param ListingUpdateRequest $request
-     * @param $lang
-     * @param Listing $listing
-     * @param ImageService $images
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(ListingUpdateRequest $request, $lang, Listing $listing, ImageService $images)
-    {
-        $user = auth('api')->user();
-
-        // 🔒 Authorization
-        if ($listing->user_id !== $user->id) {
-            return response()->json(['message' => __('listings.forbidden')], 403);
-        }
-
-        // 🚫 Prevent editing pending listings
-        if ($listing->status === 'pending') {
-            return response()->json([
-                'message' => __('listings.cannot_edit_listing')
-            ], 403);
-        }
-
-        $newFilesSaved = [];
-        $imageChanged = false;
-
-        try {
-            DB::beginTransaction();
-
-            $data = $request->validated();
-
-            // 🚗 Handle car model → make_id
-            if (!empty($data['car_model_id'])) {
-                $carModel = CarModel::find($data['car_model_id']);
-                if ($carModel) {
-                    $data['make_id'] = $carModel->make_id;
-                }
-            }
-
-            /**
-             * 🖼 IMAGE UPLOAD
-             */
-            if ($request->hasFile('images')) {
-                $imageChanged = true;
-
-                $oldCount = $listing->photos()->count();
-                $newCount = count($request->file('images'));
-
-                // 🚫 Max 10 images
-                if ($oldCount + $newCount > 10) {
-                    return response()->json([
-                        'message' => __('listings.max_images_exceeded'),
-                        'limit'   => 10,
-                        'current' => $oldCount
-                    ], 403);
-                }
-
-                foreach ($request->file('images') as $image) {
-                    $result = $images->processImageDual($image);
-
-                    $newFilesSaved[] = $result['large'];
-                    $newFilesSaved[] = $result['small'];
-
-                    $listing->photos()->create([
-                        'url'       => $result['large'],
-                        'thumbnail' => $result['small'],
-                    ]);
-                }
-            }
-
-            // 🔄 Auto change status if needed
-            if ($listing->status === 'published' && $imageChanged) {
-                $data['status'] = 'pending';
-            }
-
-            // 💾 Update listing (single save point)
-            $listing->update($data);
-
-            DB::commit();
-
-            // 🔄 Reload relations
-            $listing->load(['photos', 'user', 'location', 'category']);
-            $listing->loadTranslationAttributes();
-
-            return response()->json([
-                'message' => __('listings.updated'),
-                'listing' => new ListingResource($listing),
-            ]);
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            // 🧹 Cleanup uploaded files
             foreach ($newFilesSaved as $path) {
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
