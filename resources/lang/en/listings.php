@@ -62,7 +62,7 @@ return [
     'cannot_edit_listing' => 'This listing cannot be edited in its current state.',
     'max_images_exceeded' => 'You exceeded the maximum number of images allowed.',
     'error_deleting' => 'Error deleting listing.',
-    'sms_published' => 'Your listing has been published.',
+    'sms_published' => "Your listing has been published. You can also activate 'Top Listing' to appear on the first page.",
     'sms_expired' => 'Your listing has expired. You can republish it.',
 
     // Top listings
