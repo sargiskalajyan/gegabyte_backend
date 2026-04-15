@@ -8,7 +8,6 @@ use App\Http\Livewire\OrdersTable;
 use App\Http\Livewire\PendingListingsTable;
 use App\Http\Livewire\TranslationsTable;
 use App\Http\Livewire\UsersTable;
-use App\Services\SmsService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Dashboard;
 use App\Http\Livewire\Notifications;
@@ -27,22 +26,9 @@ use App\Http\Livewire\Tables;
 |
 */
 
-use Illuminate\Support\Facades\Log;
-
-Route::get('/test', function () {
-    try {
-        app(SmsService::class)->sendSms('093928063', 'hi');
-        return 'SMS sent successfully';
-    } catch (\Exception $e) {
-        Log::error('SMS Error: ' . $e->getMessage());
-        return 'Error: ' . $e->getMessage();
-    }
-});
-
 Route::get('/', function(){
     return redirect('sign-in');
 });
-
 
 Route::get('sign-in', Login::class)->middleware('guest')->name('login');
 Route::group(['middleware' => 'admin'], function () {
