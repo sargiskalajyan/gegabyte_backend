@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'Выдать пакет',
+    'description' => 'Назначьте любой активный пакет пользователю без оплаты.',
+    'search_label' => 'Поиск пользователя по ID, имени, email или телефону',
+    'search_prompt' => 'Введите хотя бы один символ, чтобы начать поиск пользователей.',
+    'clear_search' => 'Очистить',
+    'users_found' => 'Найденные пользователи',
+    'no_users_found' => 'Пользователи не найдены.',
+    'selection_title' => 'Выдача пакета',
+    'selected_user' => 'Выбранный пользователь',
+    'no_user_selected' => 'Пользователь не выбран',
+    'package_label' => 'Пакет',
+    'select_package' => 'Выберите пакет',
+    'current_package' => 'Текущий активный пакет',
+    'no_active_package' => 'Активный пакет отсутствует',
+    'grant_button' => 'Выдать пакет бесплатно',
+    'success_title' => 'Пакет выдан',
+    'success_message' => 'Пакет «:package» выдан пользователю :user.',
+    'user_selected_title' => 'Пользователь выбран',
+    'user_selected_message' => 'Выбран пользователь #:id.',
+    'error_title' => 'Ошибка',
+    'validation_required' => 'Выберите пользователя и пакет.',
+    'user_not_found' => 'Пользователь не найден.',
+    'package_not_found' => 'Пакет не найден или неактивен.',
+    'grant_failed' => 'Не удалось выдать пакет.',
+];

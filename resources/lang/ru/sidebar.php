@@ -12,4 +12,7 @@ return [
     'users'         => 'Пользователи',
     'translations'  => 'Переводы',
     'orders'        => 'Заказы',
+    'packages'      => [
+        'grant' => 'Выдать пакет',
+    ],
 ];

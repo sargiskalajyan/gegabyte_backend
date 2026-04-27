@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'Grant package',
+    'description' => 'Assign any active package to a user without payment.',
+    'search_label' => 'Search user by ID, username, email, or phone',
+    'search_prompt' => 'Type at least one character to search for users.',
+    'clear_search' => 'Clear',
+    'users_found' => 'Users found',
+    'no_users_found' => 'No users found.',
+    'selection_title' => 'Grant package',
+    'selected_user' => 'Selected user',
+    'no_user_selected' => 'No user selected',
+    'package_label' => 'Package',
+    'select_package' => 'Select package',
+    'current_package' => 'Current active package',
+    'no_active_package' => 'No active package',
+    'grant_button' => 'Grant package for free',
+    'success_title' => 'Package granted',
+    'success_message' => 'Package ":package" was granted to :user.',
+    'user_selected_title' => 'User selected',
+    'user_selected_message' => 'User #:id is selected.',
+    'error_title' => 'Error',
+    'validation_required' => 'Select both a user and a package.',
+    'user_not_found' => 'User not found.',
+    'package_not_found' => 'Package not found or inactive.',
+    'grant_failed' => 'Could not grant the package.',
+];

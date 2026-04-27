@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'Փաթեթ տրամադրել',
+    'description' => 'Տրամադրեք ցանկացած ակտիվ փաթեթ օգտատիրոջը անվճար։',
+    'search_label' => 'Փնտրել օգտատիրոջը ըստ ID-ի, անվան, email-ի կամ հեռախոսի',
+    'search_prompt' => 'Մուտքագրեք առնվազն մեկ նիշ՝ օգտատերեր որոնելու համար։',
+    'clear_search' => 'Մաքրել',
+    'users_found' => 'Գտնված օգտատերեր',
+    'no_users_found' => 'Օգտատերեր չեն գտնվել։',
+    'selection_title' => 'Փաթեթի տրամադրում',
+    'selected_user' => 'Ընտրված օգտատեր',
+    'no_user_selected' => 'Օգտատեր ընտրված չէ',
+    'package_label' => 'Փաթեթ',
+    'select_package' => 'Ընտրել փաթեթը',
+    'current_package' => 'Ընթացիկ ակտիվ փաթեթ',
+    'no_active_package' => 'Ակտիվ փաթեթ չկա',
+    'grant_button' => 'Տրամադրել փաթեթը անվճար',
+    'success_title' => 'Փաթեթը տրամադրված է',
+    'success_message' => '«:package» փաթեթը տրամադրվեց :user օգտատիրոջը։',
+    'user_selected_title' => 'Օգտատերը ընտրված է',
+    'user_selected_message' => 'Ընտրված է #:id օգտատերը։',
+    'error_title' => 'Սխալ',
+    'validation_required' => 'Ընտրեք օգտատեր և փաթեթ։',
+    'user_not_found' => 'Օգտատերը չի գտնվել։',
+    'package_not_found' => 'Փաթեթը չի գտնվել կամ ակտիվ չէ։',
+    'grant_failed' => 'Չհաջողվեց տրամադրել փաթեթը։',
+];

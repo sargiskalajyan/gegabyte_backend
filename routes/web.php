@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Livewire\Auth\Login;
 use App\Http\Livewire\Billing;
 use App\Http\Livewire\ListingsTable;
+use App\Http\Livewire\GrantPackage;
 use App\Http\Livewire\OrderRecovery;
 use App\Http\Livewire\OrdersTable;
 use App\Http\Livewire\PendingListingsTable;
@@ -41,6 +42,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('translations', TranslationsTable::class)->name('translations');
     Route::get('orders', OrdersTable::class)->name('orders');
     Route::get('orders/recovery', OrderRecovery::class)->name('orders.recovery');
+    Route::get('packages/grant', GrantPackage::class)->name('packages.grant');
 
 
     Route::get('billing', Billing::class)->name('billing');
